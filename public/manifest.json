@@ -1,0 +1,16 @@
+{
+  "name": "FortiCore",
+  "short_name": "FortiCore",
+  "icons": [
+    {
+      "src": "/forticoreLogo.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1c1917",
+  "theme_color": "#8A53FE"
+} 
