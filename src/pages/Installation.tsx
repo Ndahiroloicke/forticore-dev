@@ -30,3 +30,5 @@ const Installation = () => {
     </div>
   );
 };
+
+export default Installation;
