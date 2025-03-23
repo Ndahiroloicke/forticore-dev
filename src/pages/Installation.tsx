@@ -8,7 +8,7 @@ const Installation = () => {
   const [selectedPlatform, setSelectedPlatform] = useState<'linux' | 'docker'>('linux');
   
   return (
-    <div className="max-w-3xl lg:pl-72 mx-auto">
+    <div className="p-8 lg:pl-72">
       <div className="mb-12 animate-slide-up">
         <h1 className="text-4xl font-bold mb-4">Installation</h1>
         <p className="text-xl text-muted-foreground mb-6">
@@ -143,7 +143,7 @@ source venv/bin/activate`}
       
       {selectedPlatform === 'docker' && (
         <div className="animate-fade-in">
-          <h2 className="text-2xl font-bold mb-4">Docker Installation</h2>
+          <h2 className="text-2xl font-bold mb-4">Docker Installation (coming soon)</h2>
           
           <h3 className="text-lg font-medium mb-2">1. Install Docker</h3>
           <p className="text-muted-foreground mb-4">
