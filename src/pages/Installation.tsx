@@ -8,7 +8,7 @@ const Installation = () => {
   const [selectedPlatform, setSelectedPlatform] = useState<'linux' | 'docker'>('linux');
   
   return (
-    <div className="max-w-3xl mx-auto">
+    <div className="max-w-3xl lg:pl-72 mx-auto">
       <div className="mb-12 animate-slide-up">
         <h1 className="text-4xl font-bold mb-4">Installation</h1>
         <p className="text-xl text-muted-foreground mb-6">
