@@ -110,10 +110,10 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
       <aside className={cn(
         "fixed top-16 bottom-0 left-0 z-40 w-64 bg-sidebar-background border-r border-sidebar-border",
         "transition-transform duration-300 ease-in-out",
-        "overflow-hidden", // Remove overflow-y-auto
+        "flex flex-col",
         isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
       )}>
-        <div className="h-full flex flex-col">
+        <div className="flex-1 overflow-y-auto">
           <div className="p-4 border-b border-border/50 flex items-center justify-center">
             <Link to="/" className="inline-flex items-center" onClick={onClose}>
               <Shield className="h-6 w-6 mr-2 text-primary" />
@@ -121,7 +121,7 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
             </Link>
           </div>
           
-          <nav className="flex-1 px-4 py-6">
+          <nav className="p-4">
             <NavItem 
               to="/" 
               icon={Home} 
@@ -205,12 +205,13 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
               isActive={checkIsActive('/faq')} 
             />
           </nav>
-          
-          <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-border/50">
-            <div className="text-xs text-muted-foreground text-center">
-              <p>FortiCore Documentation</p>
-              <p>© 2025 FortiCore Team</p>
-            </div>
+        </div>
+
+        <div className="p-4 border-t border-border/50 mt-auto">
+          <div className="text-sm text-muted-foreground">
+            FortiCore Documentation
+            <br />
+            © 2025 FortiCore Team
           </div>
         </div>
       </aside>
