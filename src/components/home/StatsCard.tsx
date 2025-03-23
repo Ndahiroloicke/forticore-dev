@@ -1,4 +1,3 @@
-
 import { cn } from '@/lib/utils';
 
 interface StatsCardProps {
@@ -20,16 +19,16 @@ export const StatsSection = () => {
   return (
     <section className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-12 py-16 border-y border-border">
       <StatsCard 
-        value="99.9%" 
-        description="system uptime for reliable testing" 
+        value="98.5%" 
+        description="detection accuracy rate" 
       />
       <StatsCard 
-        value="40k+" 
-        description="vulnerabilities in our database" 
+        value="25k+" 
+        description="security checks in database" 
       />
       <StatsCard 
-        value="10min" 
-        description="average scan time for quick results" 
+        value="15min" 
+        description="average comprehensive scan time" 
       />
     </section>
   );

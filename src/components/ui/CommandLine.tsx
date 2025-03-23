@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { Terminal, Play, XCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -19,6 +18,24 @@ export const CommandLine = ({ commands, className, autoStart = false }: CommandL
   const [showOutput, setShowOutput] = useState(false);
   const [isRunning, setIsRunning] = useState(autoStart);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const demoCommands = [
+    {
+      input: "ftcore version",
+      output: "FortiCore v2.3.0 - Advanced Security Testing Framework",
+      delay: 1000
+    },
+    {
+      input: "ftcore scan <target>",
+      output: "Starting comprehensive scan...\nInitializing modules...\nPerforming vulnerability assessment...\nAnalyzing network security...\nChecking configurations...\n\nScan complete! Found 5 potential vulnerabilities.\nReport generated: ~/forticore/reports/scan_2024-03-21.pdf",
+      delay: 2000
+    },
+    {
+      input: "ftcore report --latest",
+      output: "Opening latest report...\n\n--------------------------------\nSCAN SUMMARY\n--------------------------------\nCritical: 1\nHigh: 2\nMedium: 1\nLow: 1\n\nKey Findings:\n1. [CRITICAL] Remote Code Execution Vulnerability\n2. [HIGH] Insecure SSL Configuration\n3. [HIGH] Exposed Administrative Interface\n\nFull report available at: ~/forticore/reports/scan_2024-03-21.pdf",
+      delay: 1500
+    }
+  ];
 
   useEffect(() => {
     if (!isRunning) return;

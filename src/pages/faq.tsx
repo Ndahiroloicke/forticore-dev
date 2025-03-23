@@ -188,14 +188,12 @@ const FAQ = () => {
             question="Can FortiCore scan behind authentication?" 
             answer={
               <div>
-                <p className="mb-2">Yes, FortiCore supports various authentication methods for scanning protected resources:</p>
+                <p className="mb-2">Yes, FortiCore supports various authentication methods:</p>
                 <ul className="list-disc list-inside space-y-2 ml-4">
-                  <li>Basic authentication: <code className="bg-primary/10 px-1.5 py-0.5 rounded text-primary">--auth-type basic --username user --password pass</code></li>
-                  <li>Token-based authentication: <code className="bg-primary/10 px-1.5 py-0.5 rounded text-primary">--auth-type bearer --token your-token</code></li>
-                  <li>Cookie-based authentication: <code className="bg-primary/10 px-1.5 py-0.5 rounded text-primary">--auth-type cookie --cookie "session=abc123"</code></li>
-                  <li>Form-based authentication: <code className="bg-primary/10 px-1.5 py-0.5 rounded text-primary">--auth-type form --auth-url https://example.com/login --username user --password pass</code></li>
+                  <li>Basic authentication: <code className="bg-primary/10 px-1.5 py-0.5 rounded text-primary">ftcore scan &lt;target&gt; --auth basic --username user --password pass</code></li>
+                  <li>Token-based authentication: <code className="bg-primary/10 px-1.5 py-0.5 rounded text-primary">ftcore scan &lt;target&gt; --auth bearer --token &lt;token&gt;</code></li>
+                  <li>Cookie-based authentication: <code className="bg-primary/10 px-1.5 py-0.5 rounded text-primary">ftcore scan &lt;target&gt; --auth cookie --cookie "session=abc123"</code></li>
                 </ul>
-                <p className="mt-2">For security reasons, we recommend storing credentials in environment variables rather than command-line arguments.</p>
               </div>
             } 
           />

@@ -7,18 +7,18 @@ import { Link } from 'react-router-dom';
 
 const demoCommands = [
   {
-    input: "forticore --version",
-    output: "FortiCore v2.3.0 (CLI) - Automated Penetration Testing Tool",
+    input: "ftcore version",
+    output: "FortiCore v2.3.0 - Advanced Security Testing Framework",
     delay: 1000
   },
   {
-    input: "forticore scan --target example.com",
-    output: "Starting vulnerability scan on example.com...\nDiscovering services...\nScanning for web vulnerabilities...\nAnalyzing network security...\nChecking for misconfigurations...\n\nScan complete! Found 7 potential vulnerabilities.\nGenerated report at ~/forticore-reports/example.com_2024-05-15.pdf",
+    input: "ftcore scan <target>",
+    output: "Starting comprehensive scan...\nInitializing modules...\nPerforming vulnerability assessment...\nAnalyzing network security...\nChecking configurations...\n\nScan complete! Found 5 potential vulnerabilities.\nReport generated: ~/forticore/reports/scan_2024-03-21.pdf",
     delay: 2000
   },
   {
-    input: "forticore report --latest",
-    output: "Opening latest report...\n\n--------------------------------\nVULNERABILITY SUMMARY\n--------------------------------\nHigh severity: 2\nMedium severity: 3\nLow severity: 2\n\nTop issues:\n1. [HIGH] Outdated SSL/TLS Configuration\n2. [HIGH] Directory Listing Enabled\n3. [MEDIUM] Missing Security Headers\n\nView the full report at ~/forticore-reports/example.com_2024-05-15.pdf",
+    input: "ftcore report --latest",
+    output: "Opening latest report...\n\n--------------------------------\nSCAN SUMMARY\n--------------------------------\nCritical: 1\nHigh: 2\nMedium: 1\nLow: 1\n\nKey Findings:\n1. [CRITICAL] Remote Code Execution Vulnerability\n2. [HIGH] Insecure SSL Configuration\n3. [HIGH] Exposed Administrative Interface\n\nFull report available at: ~/forticore/reports/scan_2024-03-21.pdf",
     delay: 1500
   }
 ];
