@@ -104,8 +104,7 @@ const Installation = () => {
           
           <CodeBlock
             code={`cd forticore
-python3 -m venv venv
-source venv/bin/activate`}
+  sudo bash install.sh`}
             caption="Create and activate virtual environment"
           />
           
