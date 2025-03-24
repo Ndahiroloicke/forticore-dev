@@ -108,16 +108,6 @@ const Installation = () => {
             caption="Create and activate virtual environment"
           />
           
-          <h3 className="text-lg font-medium mb-2 mt-6">4. Install FortiCore</h3>
-          <p className="text-muted-foreground mb-4">
-            Install FortiCore and its dependencies:
-          </p>
-          
-          <CodeBlock
-            code="pip install -e ."
-            caption="Install FortiCore"
-          />
-          
           <h3 className="text-lg font-medium mb-2 mt-6">5. Verify Installation</h3>
           <p className="text-muted-foreground mb-4">
             Verify that FortiCore is correctly installed:
