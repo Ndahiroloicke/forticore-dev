@@ -53,7 +53,7 @@ export const Navbar = ({ toggleSidebar }: NavbarProps) => {
       "sticky top-0 z-30 w-full transition-all duration-200",
       scrolled ? "glass" : "bg-transparent"
     )}>
-      <div className="container mx-auto px-4 flex items-center justify-between h-16">
+      <div className="w-full px-4 flex items-center justify-between h-16">
         <div className="flex items-center">
           <Button 
             variant="ghost" 
@@ -64,13 +64,13 @@ export const Navbar = ({ toggleSidebar }: NavbarProps) => {
             <Menu className="h-5 w-5" />
           </Button>
           
-          <Link to="/" className="hidden lg:inline-flex items-center">
+          <Link to="/" className="flex items-center">
             <img 
               src="/forticoreLogo.png" 
               alt="FortiCore Logo" 
-              className="h-11 w-16 mr-2"
+              className="h-10 w-14 mr-2 hidden md:inline"
             />
-            <span className="font-bold text-lg">FortiCore</span>
+            <span className="font-semibold text-lg">FortiCore</span>
           </Link>
         </div>
         
@@ -115,7 +115,7 @@ export const Navbar = ({ toggleSidebar }: NavbarProps) => {
         "fixed inset-0 z-50 bg-background/95 backdrop-blur-md p-4 transition-all duration-300",
         isSearchOpen ? "opacity-100" : "opacity-0 pointer-events-none"
       )}>
-        <div className="container mx-auto flex flex-col items-center justify-start pt-16 gap-8 max-w-2xl">
+        <div className="w-full mx-auto flex flex-col items-center justify-start pt-16 gap-8 max-w-2xl">
           <div className="w-full flex items-center justify-between">
             <h2 className="text-2xl font-medium">Search Documentation</h2>
             <Button 

@@ -25,8 +25,8 @@ const demoCommands = [
 
 const Index = () => {
   return (
-    <div className="lg:pl-64 min-h-screen">
-      <div className="max-w-5xl mx-auto px-8">
+    <div className="min-h-screen">
+      <div className="max-w-5xl mx-auto px-4">
         <Hero />
         
         <StatsSection />

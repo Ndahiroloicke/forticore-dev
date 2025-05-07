@@ -3,11 +3,11 @@ import { Shield, Github, Twitter, Linkedin, Mail, Heart } from 'lucide-react';
 
 export const Footer = () => {
   return (
-    <footer className="lg:pl-64 mt-auto py-12 border-t border-border/50">
+    <footer className="lg:pl-64 mt-auto py-8 sm:py-10 md:py-12 border-t border-border/50">
       <div className="container mx-auto px-4">
-        <div className="flex flex-col md:flex-row gap-8 justify-between">
+        <div className="flex flex-col md:flex-row gap-6 md:gap-8 justify-between">
           <div>
-            <Link to="/" className="inline-flex items-center mb-6">
+            <Link to="/" className="inline-flex items-center mb-4">
               <img 
                 src="/forticoreLogo.svg" 
                 alt="FortiCore Logo" 
@@ -15,7 +15,7 @@ export const Footer = () => {
               />
               <span className="font-bold text-xl">FortiCore</span>
             </Link>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-muted-foreground text-sm mb-4">
               Automated Penetration Testing Tool designed to simplify security assessment processes.
             </p>
             <div className="flex space-x-4">
@@ -123,7 +123,7 @@ export const Footer = () => {
           </div>
         </div>
         
-        <div className="mt-12 pt-6 border-t border-border flex flex-col sm:flex-row justify-between items-center text-sm text-muted-foreground">
+        <div className="mt-8 md:mt-12 pt-6 border-t border-border flex flex-col sm:flex-row justify-between items-center text-sm text-muted-foreground">
           <p>© {new Date().getFullYear()} FortiCore. All rights reserved.</p>
           <p className="mt-2 sm:mt-0 flex items-center">
             Made with <Heart className="h-4 w-4 mx-1 text-red-500" /> by the FortiCore Team

@@ -40,7 +40,7 @@ const NavItem = ({
       <Link
         to={to}
         className={cn(
-          "flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 group",
+          "flex items-center px-3 py-3 rounded-lg text-sm font-medium transition-all duration-200 group",
           isActive 
             ? "bg-primary text-primary-foreground" 
             : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
@@ -108,7 +108,8 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
       
       {/* Sidebar */}
       <aside className={cn(
-        "fixed top-16 bottom-0 left-0 z-40 w-64 bg-sidebar-background border-r border-sidebar-border",
+        "fixed top-16 bottom-0 left-0 z-40 bg-sidebar-background border-r border-sidebar-border",
+        "w-5/6 sm:w-3/4 md:w-72 lg:w-64",
         "transition-transform duration-300 ease-in-out",
         "flex flex-col",
         isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
