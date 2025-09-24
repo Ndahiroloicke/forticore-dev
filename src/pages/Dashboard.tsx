@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { Plus, Send, LogOut, Search, BookOpen, Bot, Folder, Globe, Link, FileSearch } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { getWaybackAvailability, getWaybackSnapshots, snapshotUrl } from '@/lib/wayback';
+import { getWaybackAvailability, getWaybackSnapshots, snapshotUrl, getWaybackUrlsOnly } from '@/lib/wayback';
 
 type ChatMessage = { id: string; role: 'user' | 'assistant'; content: string };
 
@@ -39,20 +39,56 @@ const Dashboard = () => {
     setInput('');
 
     // Slash command: /wayback <url>
-    const wbMatch = text.match(/^\/(wayback)\s+(\S+)/i);
+    const wbMatch = text.match(/^\/(wayback)\s+(\S+)(?:\s+(\d+))?/i);
     if (wbMatch) {
       const target = wbMatch[2];
+      const lim = wbMatch[3] ? parseInt(wbMatch[3], 10) : 50;
       (async () => {
         try {
-          const avail = await getWaybackAvailability(target);
-          const closest = avail.archived_snapshots?.closest;
-          const snaps = await getWaybackSnapshots(target, 5);
-          const header = closest?.available
-            ? `Closest snapshot: ${snapshotUrl(closest.timestamp, target)} (status ${closest.status})`
-            : 'No snapshots found';
-          const lines = snaps.length
-            ? [header, ...snaps.map(s => `- ${s.timestamp} → ${snapshotUrl(s.timestamp, s.original)} (${s.mimetype || ''})`)].join('\n')
-            : `${header}\n(Archive indexing blocked or no recent captures)`;
+          const urls = await getWaybackUrlsOnly(target, lim);
+          const format = (list: string[], max = 5) => list.slice(0, max).map((u) => `- ${u}`);
+          const toUrl = (u: string) => { try { return new URL(u); } catch { return null as any; } };
+          const parsed = urls.map(toUrl).filter(Boolean);
+          const withParams = parsed.filter(u => u.search && u.search.length > 1).map(u => u.toString());
+          const byExt = (exts: string[]) => parsed.filter(u => {
+            const m = u.pathname.match(/\.([a-z0-9]+)$/i); return m ? exts.includes(m[1].toLowerCase()) : false;
+          }).map(u => u.toString());
+          const docs = byExt(['pdf','doc','docx','xls','xlsx','csv']);
+          const archives = byExt(['zip','tar','gz','bz2','7z']);
+          const configs = byExt(['json','xml','yaml','yml','ini','env','conf']);
+          const interesting = [
+            ...withParams,
+            ...parsed.filter(u => /admin|login|config|backup|export|api|download/i.test(u.pathname)).map(u=>u.toString())
+          ];
+          // Top directories
+          const dirKey = (u: URL) => u.pathname.split('?')[0].split('/').slice(0,3).join('/') || '/';
+          const dirCount = new Map<string, number>();
+          for (const u of parsed) dirCount.set(dirKey(u), (dirCount.get(dirKey(u))||0)+1);
+          const topDirs = [...dirCount.entries()].sort((a,b)=>b[1]-a[1]).slice(0,5);
+
+          const header = urls.length ? `Wayback recon for ${target.replace(/\/*$/, '')}` : `No URLs found for ${target}`;
+          const lines = [
+            header,
+            `Total URLs: ${urls.length}`,
+            '',
+            'Top directories:',
+            ...topDirs.map(([d,c]) => `- ${d} (${c})`),
+            '',
+            `URLs with parameters (${withParams.length}):`,
+            ...format(withParams),
+            '',
+            `Documents (${docs.length}):`,
+            ...format(docs),
+            '',
+            `Archives (${archives.length}):`,
+            ...format(archives),
+            '',
+            `Config/Data (${configs.length}):`,
+            ...format(configs),
+            '',
+            `Interesting endpoints (${interesting.length}):`,
+            ...format([...new Set(interesting)]),
+          ].join('\n');
           setMessages(prev => [...prev, { id: `m${Date.now()}`, role: 'assistant', content: lines }]);
         } catch (e: any) {
           setMessages(prev => [...prev, { id: `m${Date.now()}`, role: 'assistant', content: `Wayback error: ${e.message}` }]);
@@ -180,8 +216,8 @@ const Dashboard = () => {
             <header className="h-12 border-b px-4 flex items-center text-sm text-muted-foreground">Chat • Tools sandbox</header>
             <div ref={listRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
               {messages.map(m => (
-                <div key={m.id} className={cn('max-w-3xl', m.role === 'user' ? 'ml-auto' : '')}>
-                  <div className={cn('rounded-xl px-4 py-3', m.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted')}>
+            <div key={m.id} className={cn('max-w-3xl', m.role === 'user' ? 'ml-auto' : '')}>
+              <div className={cn('rounded-xl px-4 py-3 whitespace-pre-wrap break-words text-sm leading-relaxed', m.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted')}>
                     {m.content}
                   </div>
                 </div>

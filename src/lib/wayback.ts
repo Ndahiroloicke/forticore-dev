@@ -17,6 +17,26 @@ export type WaybackSnapshot = {
   length?: string;
 };
 
+export async function getWaybackUrlsOnly(targetUrl: string, limit = 100): Promise<string[]> {
+  try {
+    const local = `/api/wayback?mode=urls&url=${encodeURIComponent(targetUrl)}&limit=${limit}`;
+    const res = await fetch(local);
+    if (res.ok) {
+      const data = await res.json();
+      return data.urls || [];
+    }
+  } catch {}
+  // Fallback to public proxy if needed
+  const pattern = `${targetUrl.endsWith('/*') ? targetUrl : targetUrl.replace(/\/$/, '') + '/*'}`;
+  const proxied = `https://r.jina.ai/http://web.archive.org/cdx/search/cdx?url=${encodeURIComponent(pattern)}&output=json&fl=original&collapse=urlkey&limit=${limit}`;
+  const text = await (await fetch(proxied)).text();
+  // Extract array and parse
+  const start = text.indexOf('[');
+  const end = text.lastIndexOf(']');
+  const arr = JSON.parse(text.slice(start, end + 1));
+  return (arr.slice?.(1) || []).map((r: string[]) => r[0]);
+}
+
 const WB_AVAILABLE = 'https://archive.org/wayback/available';
 const WB_CDX = 'https://web.archive.org/cdx/search/cdx';
 
