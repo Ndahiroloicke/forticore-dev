@@ -8,25 +8,50 @@ import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/ca
 import { getWaybackAvailability, getWaybackSnapshots, snapshotUrl, getWaybackUrlsOnly } from '@/lib/wayback';
 import { getSubdomainsFromCrt } from '@/lib/subdomains';
 
-type ChatMessage = { id: string; role: 'user' | 'assistant'; content: string; code?: boolean };
+type ChatMessage = { id: string; role: 'user' | 'assistant'; content: string; code?: boolean; loading?: boolean };
 
 const Dashboard = () => {
   const { user, signOut } = useAuth();
-  const [conversations, setConversations] = useState<Array<{ id: string; title: string }>>([
-    { id: 'c1', title: 'New chat' }
-  ]);
+  type Session = { id: string; title: string; messages: ChatMessage[] };
+  const STORAGE_KEY = 'forticore.sessions.v1';
+  const [conversations, setConversations] = useState<Session[]>([{ id: 'c1', title: 'New session', messages: [] }]);
   const [activeId, setActiveId] = useState('c1');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
+
+  const toDomain = (input: string) => {
+    try { return new URL(input).hostname.toLowerCase(); } catch { return input.replace(/^https?:\/\//,'').split('/')[0].toLowerCase(); }
+  };
 
   useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages.length]);
 
+  // Load sessions on mount
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed: Session[] = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length) {
+          setConversations(parsed);
+          setActiveId(parsed[0].id);
+          setMessages(parsed[0].messages || []);
+        }
+      }
+    } catch {}
+  }, []);
+
+  // Persist on change
+  useEffect(() => {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(conversations)); } catch {}
+  }, [conversations]);
+
   const addConversation = () => {
     const id = `c${Date.now()}`;
-    setConversations(prev => [{ id, title: 'New chat' }, ...prev]);
+    setConversations(prev => [{ id, title: 'New session', messages: [] }, ...prev]);
     setActiveId(id);
     // Start with no messages so the centered input hero shows
     setMessages([]);
@@ -37,12 +62,21 @@ const Dashboard = () => {
     if (!text) return;
     const newMsg: ChatMessage = { id: `m${Date.now()}`, role: 'user', content: text };
     setMessages(prev => [...prev, newMsg]);
+    setConversations(prev => prev.map(s => s.id === activeId ? { ...s, messages: [...s.messages, newMsg] } : s));
     setInput('');
+
+    // add loading indicator
+    const loadingMsg: ChatMessage = { id: `l${Date.now()}`, role: 'assistant', content: 'Analyzing…', loading: true };
+    setLoading(true);
+    setMessages(prev => [...prev, loadingMsg]);
+    setConversations(prev => prev.map(s => s.id === activeId ? { ...s, messages: [...s.messages, loadingMsg] } : s));
 
     // Slash command: /wayback <url>
     const wbMatch = text.match(/^\/(wayback)\s+(\S+)(?:\s+(\d+))?/i);
     if (wbMatch) {
       const target = wbMatch[2];
+      const domainTitle = toDomain(target);
+      setConversations(prev => prev.map(s => s.id === activeId ? { ...s, title: domainTitle || s.title } : s));
       const lim = wbMatch[3] ? parseInt(wbMatch[3], 10) : 50;
       (async () => {
         try {
@@ -78,9 +112,18 @@ const Dashboard = () => {
             interestingEndpoints: [...new Set(interesting)].slice(0, 50),
           };
           const json = JSON.stringify(payload, null, 2);
-          setMessages(prev => [...prev, { id: `m${Date.now()}`, role: 'assistant', content: json, code: true }]);
+          const reply: ChatMessage = { id: `m${Date.now()}`, role: 'assistant', content: json, code: true };
+          setMessages(prev => [...prev.filter(m => !m.loading), reply]);
+          setConversations(prev => prev.map(s => s.id === activeId ? { ...s, messages: [...s.messages.filter(m=>!m.loading), reply] } : s));
+          setLoading(false);
         } catch (e: any) {
-          setMessages(prev => [...prev, { id: `m${Date.now()}`, role: 'assistant', content: `Wayback error: ${e.message}` }]);
+          const errText = e?.message?.includes('Unexpected end of JSON input')
+            ? 'Wayback error: Received an incomplete response. Please try again or reduce the limit.'
+            : `Wayback error: ${e.message}`;
+          const err: ChatMessage = { id: `m${Date.now()}`, role: 'assistant', content: errText };
+          setMessages(prev => [...prev.filter(m => !m.loading), err]);
+          setConversations(prev => prev.map(s => s.id === activeId ? { ...s, messages: [...s.messages.filter(m=>!m.loading), err] } : s));
+          setLoading(false);
         }
       })();
       return;
@@ -90,13 +133,24 @@ const Dashboard = () => {
     const sdMatch = text.match(/^\/(subdomain|subdomains)\s+(\S+)/i);
     if (sdMatch) {
       const domain = sdMatch[2];
+      const domainTitle = toDomain(domain);
+      setConversations(prev => prev.map(s => s.id === activeId ? { ...s, title: domainTitle || s.title } : s));
       (async () => {
         try {
           const data = await getSubdomainsFromCrt(domain);
           const json = JSON.stringify(data, null, 2);
-          setMessages(prev => [...prev, { id: `m${Date.now()}`, role: 'assistant', content: json, code: true }]);
+          const reply: ChatMessage = { id: `m${Date.now()}`, role: 'assistant', content: json, code: true };
+          setMessages(prev => [...prev.filter(m => !m.loading), reply]);
+          setConversations(prev => prev.map(s => s.id === activeId ? { ...s, messages: [...s.messages.filter(m=>!m.loading), reply] } : s));
+          setLoading(false);
         } catch (e: any) {
-          setMessages(prev => [...prev, { id: `m${Date.now()}`, role: 'assistant', content: `Subdomain error: ${e.message}` }]);
+          const msg = e?.message?.includes('Invalid response')
+            ? 'Subdomain error: crt.sh returned an invalid response. Please wait a moment and retry.'
+            : `Subdomain error: ${e.message}`;
+          const err: ChatMessage = { id: `m${Date.now()}`, role: 'assistant', content: msg };
+          setMessages(prev => [...prev.filter(m => !m.loading), err]);
+          setConversations(prev => prev.map(s => s.id === activeId ? { ...s, messages: [...s.messages.filter(m=>!m.loading), err] } : s));
+          setLoading(false);
         }
       })();
       return;
@@ -104,7 +158,10 @@ const Dashboard = () => {
 
     // Default echo placeholder
     setTimeout(() => {
-      setMessages(prev => [...prev, { id: `m${Date.now()}`, role: 'assistant', content: `You said: "${text}". (Tool execution placeholder)` }]);
+      const reply: ChatMessage = { id: `m${Date.now()}`, role: 'assistant', content: `You said: "${text}". (Tool execution placeholder)` };
+      setMessages(prev => [...prev.filter(m => !m.loading), reply]);
+      setConversations(prev => prev.map(s => s.id === activeId ? { ...s, messages: [...s.messages.filter(m=>!m.loading), reply] } : s));
+      setLoading(false);
     }, 400);
   };
 
@@ -115,20 +172,22 @@ const Dashboard = () => {
     }
   };
 
+  const showSidebar = messages.length > 0;
   return (
-    <div className="grid grid-cols-1 md:grid-cols-[260px_1fr] h-screen gap-0 bg-background overflow-hidden">
+    <div className={cn('grid h-screen gap-0 bg-background overflow-hidden', showSidebar ? 'grid-cols-1 md:grid-cols-[260px_1fr]' : 'grid-cols-1')}>
       {/* Sidebar */}
+      {showSidebar && (
       <aside className="hidden md:flex flex-col border-r bg-background sticky top-0 h-screen overflow-hidden">
         <div className="p-3 border-b space-y-3">
           <div className="flex items-center gap-2 px-1">
             <img src="/forticoreLogo.svg" alt="FortiCore" className="h-12 w-12" />
           </div>
           <Button size="sm" className="w-full justify-start" onClick={addConversation}>
-            <Plus className="h-4 w-4 mr-2" /> New chat
+            <Plus className="h-4 w-4 mr-2" /> New session
           </Button>
           <nav className="space-y-1 text-sm">
             <button className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-accent">
-              <Search className="h-4 w-4" /> Search chats
+              <Search className="h-4 w-4" /> Search sessions
             </button>
             {/* <button className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-accent">
               <BookOpen className="h-4 w-4" /> Library
@@ -143,7 +202,7 @@ const Dashboard = () => {
         </div>
         <div className="flex-1 overflow-hidden p-2 space-y-1">
           {conversations.map(c => (
-            <button key={c.id} onClick={() => setActiveId(c.id)} className={cn('w-full text-left px-3 py-2 rounded-md text-sm hover:bg-accent', activeId === c.id && 'bg-accent')}>{c.title}</button>
+            <button key={c.id} onClick={() => { setActiveId(c.id); setMessages(c.messages || []); }} className={cn('w-full text-left px-3 py-2 rounded-md text-sm hover:bg-accent', activeId === c.id && 'bg-accent')}>{c.title}</button>
           ))}
         </div>
         <div className="p-3 border-t">
@@ -152,6 +211,7 @@ const Dashboard = () => {
           </Button>
         </div>
       </aside>
+      )}
 
       {/* Chat area */}
       <section className="flex flex-col h-screen overflow-hidden">
@@ -214,6 +274,14 @@ const Dashboard = () => {
                   <Send className="h-4 w-4" />
                 </Button>
               </div>
+              <div className="mt-12 text-center">
+                <button
+                  className="text-sm font-medium text-foreground/90 underline decoration-purple-600 decoration-2 underline-offset-4 hover:opacity-90 inline-flex items-center gap-1"
+                  onClick={() => setInput('/wayback example.com')}
+                >
+                  Explore Trends <span>→</span>
+                </button>
+              </div>
             </div>
           </div>
         ) : (
@@ -236,9 +304,17 @@ const Dashboard = () => {
                   </pre>
                 </div>
               ) : (
-                <div className={cn('rounded-xl px-4 py-3 whitespace-pre-wrap break-words text-sm leading-relaxed', m.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted')}>
-                  {m.content}
-                </div>
+                m.loading ? (
+                  <div className="rounded-xl px-4 py-3 bg-muted flex items-center gap-2 text-sm">
+                    <span className="inline-block w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                    <span className="inline-block w-2 h-2 rounded-full bg-primary/80 animate-pulse [animation-delay:150ms]"></span>
+                    <span className="inline-block w-2 h-2 rounded-full bg-primary/60 animate-pulse [animation-delay:300ms]"></span>
+                  </div>
+                ) : (
+                  <div className={cn('rounded-xl px-4 py-3 whitespace-pre-wrap break-words text-sm leading-relaxed', m.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted')}>
+                    {m.content}
+                  </div>
+                )
               )}
                 </div>
               ))}

@@ -21,10 +21,17 @@ export async function getSubdomainsFromCrt(domainInput: string): Promise<{ domai
   }
 
   // Fallback: fetch directly via a read-only proxy (avoids CORS)
-  const proxied = `https://r.jina.ai/http://crt.sh/?q=${encodeURIComponent(domain)}&output=json`;
+  const wildcard = `%.${domain.replace(/^www\./,'')}`;
+  const proxied = `https://r.jina.ai/http://crt.sh/?q=${encodeURIComponent(wildcard)}&output=json`;
   const text = await (await fetch(proxied, { cache: 'no-store' })).text();
   let data: any = [];
-  try { data = JSON.parse(text); } catch {}
+  try { data = JSON.parse(text); } catch {
+    const start = text.indexOf('[');
+    const end = text.lastIndexOf(']');
+    if (start !== -1 && end !== -1 && end > start) {
+      try { data = JSON.parse(text.slice(start, end + 1)); } catch {}
+    }
+  }
   const names: string[] = Array.isArray(data) ? data.flatMap((r: any) => String(r?.name_value || '').split(/\n+/)) : [];
   const subdomains = [...new Set(
     names

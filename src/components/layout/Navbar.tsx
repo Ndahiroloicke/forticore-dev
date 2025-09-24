@@ -103,8 +103,8 @@ export const Navbar = ({ toggleSidebar }: NavbarProps) => {
             asChild
             className="hidden sm:flex"
           >
-            <a href="https://github.com/forticore-team/forticore" target="_blank" rel="noopener noreferrer">
-              GitHub
+            <a href="/login" target="_blank" rel="noopener noreferrer">
+              Get Started
             </a>
           </Button>
         </div>

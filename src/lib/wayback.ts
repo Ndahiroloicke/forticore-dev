@@ -20,21 +20,26 @@ export type WaybackSnapshot = {
 export async function getWaybackUrlsOnly(targetUrl: string, limit = 100): Promise<string[]> {
   try {
     const local = `/api/wayback?mode=urls&url=${encodeURIComponent(targetUrl)}&limit=${limit}`;
-    const res = await fetch(local);
+    const res = await fetch(local, { cache: 'no-store' });
     if (res.ok) {
       const data = await res.json();
       return data.urls || [];
     }
   } catch {}
-  // Fallback to public proxy if needed
-  const pattern = `${targetUrl.endsWith('/*') ? targetUrl : targetUrl.replace(/\/$/, '') + '/*'}`;
-  const proxied = `https://r.jina.ai/http://web.archive.org/cdx/search/cdx?url=${encodeURIComponent(pattern)}&output=json&fl=original&collapse=urlkey&limit=${limit}`;
-  const text = await (await fetch(proxied)).text();
-  // Extract array and parse
-  const start = text.indexOf('[');
-  const end = text.lastIndexOf(']');
-  const arr = JSON.parse(text.slice(start, end + 1));
-  return (arr.slice?.(1) || []).map((r: string[]) => r[0]);
+  try {
+    // Fallback to public proxy if needed
+    const pattern = `${targetUrl.endsWith('/*') ? targetUrl : targetUrl.replace(/\/$/, '') + '/*'}`;
+    const proxied = `https://r.jina.ai/http://web.archive.org/cdx/search/cdx?url=${encodeURIComponent(pattern)}&output=json&fl=original&collapse=urlkey&limit=${limit}`;
+    const text = await (await fetch(proxied, { cache: 'no-store' })).text();
+    // Extract array and parse
+    const start = text.indexOf('[');
+    const end = text.lastIndexOf(']');
+    if (start === -1 || end === -1 || end <= start) return [];
+    const arr = JSON.parse(text.slice(start, end + 1));
+    return (arr.slice?.(1) || []).map((r: string[]) => r[0]);
+  } catch {
+    return [];
+  }
 }
 
 const WB_AVAILABLE = 'https://archive.org/wayback/available';
