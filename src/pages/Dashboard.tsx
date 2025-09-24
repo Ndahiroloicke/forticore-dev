@@ -7,7 +7,7 @@ import { Plus, Send, LogOut, Search, BookOpen, Bot, Folder, Globe, Link, FileSea
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { getWaybackAvailability, getWaybackSnapshots, snapshotUrl, getWaybackUrlsOnly } from '@/lib/wayback';
 
-type ChatMessage = { id: string; role: 'user' | 'assistant'; content: string };
+type ChatMessage = { id: string; role: 'user' | 'assistant'; content: string; code?: boolean };
 
 const Dashboard = () => {
   const { user, signOut } = useAuth();
@@ -66,30 +66,18 @@ const Dashboard = () => {
           for (const u of parsed) dirCount.set(dirKey(u), (dirCount.get(dirKey(u))||0)+1);
           const topDirs = [...dirCount.entries()].sort((a,b)=>b[1]-a[1]).slice(0,5);
 
-          const header = urls.length ? `Wayback recon for ${target.replace(/\/*$/, '')}` : `No URLs found for ${target}`;
-          const lines = [
-            header,
-            `Total URLs: ${urls.length}`,
-            '',
-            'Top directories:',
-            ...topDirs.map(([d,c]) => `- ${d} (${c})`),
-            '',
-            `URLs with parameters (${withParams.length}):`,
-            ...format(withParams),
-            '',
-            `Documents (${docs.length}):`,
-            ...format(docs),
-            '',
-            `Archives (${archives.length}):`,
-            ...format(archives),
-            '',
-            `Config/Data (${configs.length}):`,
-            ...format(configs),
-            '',
-            `Interesting endpoints (${interesting.length}):`,
-            ...format([...new Set(interesting)]),
-          ].join('\n');
-          setMessages(prev => [...prev, { id: `m${Date.now()}`, role: 'assistant', content: lines }]);
+          const payload = {
+            target: target.replace(/\/*$/, ''),
+            total: urls.length,
+            topDirectories: topDirs.map(([path, count]) => ({ path, count })),
+            urlsWithParams: withParams.slice(0, 50),
+            documents: docs.slice(0, 50),
+            archives: archives.slice(0, 50),
+            configOrData: configs.slice(0, 50),
+            interestingEndpoints: [...new Set(interesting)].slice(0, 50),
+          };
+          const json = JSON.stringify(payload, null, 2);
+          setMessages(prev => [...prev, { id: `m${Date.now()}`, role: 'assistant', content: json, code: true }]);
         } catch (e: any) {
           setMessages(prev => [...prev, { id: `m${Date.now()}`, role: 'assistant', content: `Wayback error: ${e.message}` }]);
         }
@@ -217,9 +205,15 @@ const Dashboard = () => {
             <div ref={listRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
               {messages.map(m => (
             <div key={m.id} className={cn('max-w-3xl', m.role === 'user' ? 'ml-auto' : '')}>
-              <div className={cn('rounded-xl px-4 py-3 whitespace-pre-wrap break-words text-sm leading-relaxed', m.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted')}>
-                    {m.content}
-                  </div>
+              {m.code ? (
+                <pre className="rounded-xl px-4 py-3 text-sm leading-relaxed overflow-x-auto bg-[#0b1220] text-slate-100 border border-border">
+<code>{m.content}</code>
+                </pre>
+              ) : (
+                <div className={cn('rounded-xl px-4 py-3 whitespace-pre-wrap break-words text-sm leading-relaxed', m.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted')}>
+                  {m.content}
+                </div>
+              )}
                 </div>
               ))}
             </div>
