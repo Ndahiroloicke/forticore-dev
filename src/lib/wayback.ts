@@ -66,8 +66,17 @@ export async function getWaybackSnapshots(targetUrl: string, limit = 10): Promis
   try {
     data = JSON.parse(text);
   } catch {
-    // r.jina.ai sometimes returns newline-delimited arrays; attempt to fix
-    data = JSON.parse(text.replace(/\n/g, '')); 
+    // Some proxies return a Markdown page with a JSON array present; extract the first JSON array
+    const start = text.indexOf('[');
+    const end = text.lastIndexOf(']');
+    if (start !== -1 && end !== -1 && end > start) {
+      const slice = text.slice(start, end + 1);
+      data = JSON.parse(slice);
+    } else {
+      // Attempt a minimal cleanup (remove leading labels)
+      const cleaned = text.replace(/^[^{\[]+/, '');
+      data = JSON.parse(cleaned);
+    }
   }
   // First row is header
   const rows: string[][] = data.slice(1);
