@@ -54,7 +54,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const signUpWithPassword = async (email: string, password: string) => {
     if (!supabase) return { error: 'Auth not configured. Missing env vars.' };
-    const { error } = await supabase.auth.signUp({ email, password });
+    const { error } = await supabase.auth.signUp({ 
+      email, 
+      password,
+      options: { emailRedirectTo: `${window.location.origin}/auth/callback` }
+    });
+    if (error) return { error: error.message };
+    return {};
+  };
+
+  const resendEmailConfirmation = async (email: string) => {
+    if (!supabase) return { error: 'Auth not configured. Missing env vars.' };
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email,
+      options: { emailRedirectTo: `${window.location.origin}/auth/callback` }
+    });
     if (error) return { error: error.message };
     return {};
   };
@@ -66,14 +81,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const signInWithOAuth = async (provider: 'google' | 'github') => {
     if (!supabase) return { error: 'Auth not configured. Missing env vars.' };
-    const redirectTo = `${window.location.origin}/dashboard`;
+    const redirectTo = `${window.location.origin}/auth/callback`;
     const { error } = await supabase.auth.signInWithOAuth({ provider, options: { redirectTo } });
     if (error) return { error: error.message };
     return {};
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, signInWithPassword, signUpWithPassword, signInWithOAuth, signOut }}>
+    <AuthContext.Provider value={{ user, session, loading, signInWithPassword, signUpWithPassword, signInWithOAuth, signOut, resendEmailConfirmation }}>
       {children}
     </AuthContext.Provider>
   );

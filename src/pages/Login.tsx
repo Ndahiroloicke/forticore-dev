@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const Login = () => {
-  const { user, loading, signInWithPassword, signInWithOAuth } = useAuth();
+  const { user, loading, signInWithPassword, signInWithOAuth, resendEmailConfirmation } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -30,6 +30,11 @@ const Login = () => {
     } else {
       navigate('/dashboard', { replace: true });
     }
+  };
+
+  const handleResend = async () => {
+    const { error } = await resendEmailConfirmation(email);
+    if (error) setError(error);
   };
 
   return (
@@ -72,6 +77,11 @@ const Login = () => {
           {submitting ? 'Signing in...' : 'Sign In'}
         </Button>
       </form>
+      <p className="mt-2 text-center text-xs text-muted-foreground">
+        If you signed up by email, please confirm your email before signing in.{' '}
+        <button type="button" onClick={handleResend} className="text-primary hover:underline">Resend email</button>
+      </p>
+
       <p className="mt-4 text-center text-sm text-muted-foreground">
         Don't have an account?{' '}
         <a className="text-primary hover:underline" onClick={() => navigate('/signup')}>Sign up</a>

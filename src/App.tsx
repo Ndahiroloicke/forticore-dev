@@ -20,6 +20,7 @@ import FAQ from "@/pages/faq";
 import Login from "@/pages/Login";
 import Signup from "@/pages/Signup";
 import Dashboard from "@/pages/Dashboard";
+import AuthCallback from "@/pages/AuthCallback";
 
 const queryClient = new QueryClient();
 
@@ -34,23 +35,26 @@ const App = () => (
             {/* Auth routes without Layout */}
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/auth/callback" element={<AuthCallback />} />
 
-            {/* App routes with Layout */}
+            {/* Protected app routes without public Layout (custom UI) */}
+            <Route element={<ProtectedRoute />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+            </Route>
+
+            {/* Public app routes with site Layout */}
             <Route element={<Layout />}> 
               <Route path="/" element={<Index />} />
-            <Route path="/installation" element={<Installation />} />
-            <Route path="/documentation" element={<Documentation />} />
-            <Route path="/quick-start" element={<QuickStart />} />
-            <Route path="/features" element={<Features />} />
-            <Route path="/configuration" element={<Configuration />} />
-            <Route path="/integration" element={<Integration />} />
-            <Route path="/customization" element={<Customization />} />
-            <Route path="/faq" element={<FAQ />} />
-              <Route element={<ProtectedRoute />}>
-                <Route path="/dashboard" element={<Dashboard />} />
-              </Route>
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
+              <Route path="/installation" element={<Installation />} />
+              <Route path="/documentation" element={<Documentation />} />
+              <Route path="/quick-start" element={<QuickStart />} />
+              <Route path="/features" element={<Features />} />
+              <Route path="/configuration" element={<Configuration />} />
+              <Route path="/integration" element={<Integration />} />
+              <Route path="/customization" element={<Customization />} />
+              <Route path="/faq" element={<FAQ />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
             </Route>
           </Routes>
         </AuthProvider>
