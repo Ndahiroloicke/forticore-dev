@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { Plus, Send, LogOut, Search, BookOpen, Bot, Folder, Globe, Link, FileSearch } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { getWaybackAvailability, getWaybackSnapshots, snapshotUrl, getWaybackUrlsOnly } from '@/lib/wayback';
+import { getSubdomainsFromCrt } from '@/lib/subdomains';
 
 type ChatMessage = { id: string; role: 'user' | 'assistant'; content: string; code?: boolean };
 
@@ -85,6 +86,22 @@ const Dashboard = () => {
       return;
     }
 
+    // Slash command: /subdomain <domain>
+    const sdMatch = text.match(/^\/(subdomain|subdomains)\s+(\S+)/i);
+    if (sdMatch) {
+      const domain = sdMatch[2];
+      (async () => {
+        try {
+          const data = await getSubdomainsFromCrt(domain);
+          const json = JSON.stringify(data, null, 2);
+          setMessages(prev => [...prev, { id: `m${Date.now()}`, role: 'assistant', content: json, code: true }]);
+        } catch (e: any) {
+          setMessages(prev => [...prev, { id: `m${Date.now()}`, role: 'assistant', content: `Subdomain error: ${e.message}` }]);
+        }
+      })();
+      return;
+    }
+
     // Default echo placeholder
     setTimeout(() => {
       setMessages(prev => [...prev, { id: `m${Date.now()}`, role: 'assistant', content: `You said: "${text}". (Tool execution placeholder)` }]);
@@ -137,7 +154,7 @@ const Dashboard = () => {
       </aside>
 
       {/* Chat area */}
-      <section className="flex flex-col h-full">
+      <section className="flex flex-col h-screen overflow-hidden">
         {messages.length === 0 ? (
           <div className="flex-1 grid place-items-center px-4">
             <div className="max-w-3xl w-full">
