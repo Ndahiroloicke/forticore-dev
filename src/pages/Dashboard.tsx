@@ -99,9 +99,9 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-[260px_1fr] h-screen gap-0 bg-background">
+    <div className="grid grid-cols-1 md:grid-cols-[260px_1fr] h-screen gap-0 bg-background overflow-hidden">
       {/* Sidebar */}
-      <aside className="hidden md:flex flex-col border-r bg-background">
+      <aside className="hidden md:flex flex-col border-r bg-background sticky top-0 h-screen overflow-hidden">
         <div className="p-3 border-b space-y-3">
           <div className="flex items-center gap-2 px-1">
             <img src="/forticoreLogo.svg" alt="FortiCore" className="h-12 w-12" />
@@ -124,7 +124,7 @@ const Dashboard = () => {
             </button> */}
           </nav>
         </div>
-        <div className="flex-1 overflow-y-auto p-2 space-y-1">
+        <div className="flex-1 overflow-hidden p-2 space-y-1">
           {conversations.map(c => (
             <button key={c.id} onClick={() => setActiveId(c.id)} className={cn('w-full text-left px-3 py-2 rounded-md text-sm hover:bg-accent', activeId === c.id && 'bg-accent')}>{c.title}</button>
           ))}
@@ -206,9 +206,18 @@ const Dashboard = () => {
               {messages.map(m => (
             <div key={m.id} className={cn('max-w-3xl', m.role === 'user' ? 'ml-auto' : '')}>
               {m.code ? (
-                <pre className="rounded-xl px-4 py-3 text-sm leading-relaxed overflow-x-auto bg-[#0b1220] text-slate-100 border border-border">
+                <div className="relative">
+                  <button
+                    className="absolute right-2 top-2 z-10 text-xs px-2 py-1 rounded-md bg-muted hover:bg-muted/80 border"
+                    onClick={() => navigator.clipboard.writeText(m.content)}
+                    aria-label="Copy to clipboard"
+                  >
+                    Copy
+                  </button>
+                  <pre className="rounded-xl px-4 py-3 text-sm leading-relaxed overflow-x-auto bg-[#0b1220] text-slate-100 border border-border">
 <code>{m.content}</code>
-                </pre>
+                  </pre>
+                </div>
               ) : (
                 <div className={cn('rounded-xl px-4 py-3 whitespace-pre-wrap break-words text-sm leading-relaxed', m.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted')}>
                   {m.content}
