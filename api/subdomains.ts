@@ -16,26 +16,31 @@ export default async function handler(req: Request) {
   const base = domain.replace(/^www\./, '');
   if (!domain) return new Response(JSON.stringify({ error: 'Missing domain' }), { status: 400, headers: cors() });
   try {
-    // Use wildcard query to include subdomains
-    const query = `%25.${base}`; // translates to '%.base'
-    const url = `https://crt.sh/?q=${encodeURIComponent(query)}&output=json`;
-    const headers = {
-      'User-Agent': 'FortiCoreBot/1.0 (+https://forticore.dev)',
-      'Accept': 'application/json,text/plain;q=0.9,*/*;q=0.8',
-    } as Record<string, string>;
-    let res = await fetch(url, { headers, cache: 'no-store' });
-    if (!res.ok) return new Response(JSON.stringify({ error: `crt.sh error ${res.status}` }), { status: 502, headers: cors() });
-    let text = await res.text();
-    if (/^\s*</.test(text)) {
-      const proxied = `https://r.jina.ai/http://crt.sh/?q=${encodeURIComponent(domain)}&output=json`;
-      const alt = await fetch(proxied, { headers, cache: 'no-store' });
-      text = await alt.text();
+    async function fetchCrt(q: string): Promise<any[]> {
+      const headers = {
+        'User-Agent': 'FortiCoreBot/1.0 (+https://forticore.dev)',
+        'Accept': 'application/json,text/plain;q=0.9,*/*;q=0.8',
+      } as Record<string, string>;
+      // direct
+      let res = await fetch(`https://crt.sh/?q=${encodeURIComponent(q)}&output=json`, { headers, cache: 'no-store' });
+      let text = await res.text();
+      if (!res.ok || /^\s*</.test(text)) {
+        // proxy fallback
+        const proxied = `https://r.jina.ai/http://crt.sh/?q=${encodeURIComponent(q)}&output=json`;
+        const alt = await fetch(proxied, { headers, cache: 'no-store' });
+        text = await alt.text();
+      }
+      try { return JSON.parse(text); } catch { return []; }
     }
-    let data: any;
-    try {
-      data = JSON.parse(text);
-    } catch {
-      return new Response(JSON.stringify({ error: 'Invalid response from crt.sh' }), { status: 502, headers: cors() });
+
+    // Try both exact and wildcard, pick the larger set
+    const [dataExact, dataWild] = await Promise.all([
+      fetchCrt(base),
+      fetchCrt(`%.${base}`),
+    ]);
+    const data = dataWild.length >= dataExact.length ? dataWild : dataExact;
+    if (!Array.isArray(data) || data.length === 0) {
+      return new Response(JSON.stringify({ domain: base, total: 0, subdomains: [] }), { headers: cors() });
     }
     const names: string[] = Array.isArray(data)
       ? data.flatMap((r: any) => {
