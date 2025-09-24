@@ -7,6 +7,8 @@ type AuthContextValue = {
   session: Session | null;
   loading: boolean;
   signInWithPassword: (email: string, password: string) => Promise<{ error?: string }>;
+  signUpWithPassword: (email: string, password: string) => Promise<{ error?: string }>;
+  signInWithOAuth: (provider: 'google' | 'github') => Promise<{ error?: string }>;
   signOut: () => Promise<void>;
 };
 
@@ -18,6 +20,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!supabase) {
+      // Missing envs; disable auth but keep app usable
+      console.warn('[Auth] Supabase client unavailable. Check env vars.');
+      setLoading(false);
+      return;
+    }
+
     const init = async () => {
       const { data } = await supabase.auth.getSession();
       setSession(data.session ?? null);
@@ -37,17 +46,33 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const signInWithPassword = async (email: string, password: string) => {
+    if (!supabase) return { error: 'Auth not configured. Missing env vars.' };
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) return { error: error.message };
     return {};
   };
 
+  const signUpWithPassword = async (email: string, password: string) => {
+    if (!supabase) return { error: 'Auth not configured. Missing env vars.' };
+    const { error } = await supabase.auth.signUp({ email, password });
+    if (error) return { error: error.message };
+    return {};
+  };
+
   const signOut = async () => {
+    if (!supabase) return;
     await supabase.auth.signOut();
   };
 
+  const signInWithOAuth = async (provider: 'google' | 'github') => {
+    if (!supabase) return { error: 'Auth not configured. Missing env vars.' };
+    const { error } = await supabase.auth.signInWithOAuth({ provider });
+    if (error) return { error: error.message };
+    return {};
+  };
+
   return (
-    <AuthContext.Provider value={{ user, session, loading, signInWithPassword, signOut }}>
+    <AuthContext.Provider value={{ user, session, loading, signInWithPassword, signUpWithPassword, signInWithOAuth, signOut }}>
       {children}
     </AuthContext.Provider>
   );

@@ -18,6 +18,7 @@ import Integration from "@/pages/integration";
 import Customization from "@/pages/customization";
 import FAQ from "@/pages/faq";
 import Login from "@/pages/Login";
+import Signup from "@/pages/Signup";
 import Dashboard from "@/pages/Dashboard";
 
 const queryClient = new QueryClient();
@@ -30,9 +31,13 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <Routes>
+            {/* Auth routes without Layout */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+
+            {/* App routes with Layout */}
             <Route element={<Layout />}> 
-            <Route path="/" element={<Index />} />
-              <Route path="/login" element={<Login />} />
+              <Route path="/" element={<Index />} />
             <Route path="/installation" element={<Installation />} />
             <Route path="/documentation" element={<Documentation />} />
             <Route path="/quick-start" element={<QuickStart />} />

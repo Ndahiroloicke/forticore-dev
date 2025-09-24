@@ -90,9 +90,9 @@ export default {
         sm: 'calc(var(--radius) - 4px)'
       },
       fontFamily: {
-        sans: ['Inter var', 'Inter', 'SF Pro Display', 'system-ui', 'sans-serif'],
+        sans: ['Inter', 'Inter var', 'system-ui', 'sans-serif'],
         mono: ['SF Mono', 'JetBrains Mono', 'monospace'],
-        heading: ['JetBrains Mono', 'monospace']
+        heading: ['Sora', 'Outfit', 'Inter', 'system-ui', 'sans-serif']
       },
       keyframes: {
         'accordion-down': {
