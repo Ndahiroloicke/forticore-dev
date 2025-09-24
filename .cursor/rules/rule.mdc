@@ -1,0 +1,5 @@
+---
+description: Always apply context 7 across all coding projects
+globs: "**/*"
+alwaysApply: true
+---

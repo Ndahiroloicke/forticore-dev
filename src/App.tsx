@@ -5,6 +5,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
+import { ProtectedRoute } from "@/components/layout/ProtectedRoute";
+import { AuthProvider } from "@/hooks/useAuth";
 import Index from "@/pages/Index";
 import Installation from "@/pages/Installation";
 import Documentation from "@/pages/Documentation";
@@ -15,6 +17,8 @@ import Configuration from "@/pages/configuration";
 import Integration from "@/pages/integration";
 import Customization from "@/pages/customization";
 import FAQ from "@/pages/faq";
+import Login from "@/pages/Login";
+import Dashboard from "@/pages/Dashboard";
 
 const queryClient = new QueryClient();
 
@@ -24,9 +28,11 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route element={<Layout />}>
+        <AuthProvider>
+          <Routes>
+            <Route element={<Layout />}> 
             <Route path="/" element={<Index />} />
+              <Route path="/login" element={<Login />} />
             <Route path="/installation" element={<Installation />} />
             <Route path="/documentation" element={<Documentation />} />
             <Route path="/quick-start" element={<QuickStart />} />
@@ -35,10 +41,14 @@ const App = () => (
             <Route path="/integration" element={<Integration />} />
             <Route path="/customization" element={<Customization />} />
             <Route path="/faq" element={<FAQ />} />
+              <Route element={<ProtectedRoute />}>
+                <Route path="/dashboard" element={<Dashboard />} />
+              </Route>
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
-          </Route>
-        </Routes>
+            </Route>
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
