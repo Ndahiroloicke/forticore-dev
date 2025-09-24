@@ -66,7 +66,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const signInWithOAuth = async (provider: 'google' | 'github') => {
     if (!supabase) return { error: 'Auth not configured. Missing env vars.' };
-    const { error } = await supabase.auth.signInWithOAuth({ provider });
+    const redirectTo = `${window.location.origin}/dashboard`;
+    const { error } = await supabase.auth.signInWithOAuth({ provider, options: { redirectTo } });
     if (error) return { error: error.message };
     return {};
   };
