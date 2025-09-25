@@ -258,44 +258,44 @@ const Dashboard = () => {
                   <Send className="h-4 w-4" />
                 </Button>
               </div>
-              <div className="mt-12 text-center">
+              {/* <div className="mt-12 text-center">
                 <a
                   className="text-sm font-medium text-foreground/90 underline decoration-purple-600 decoration-2 underline-offset-4 hover:opacity-90 inline-flex items-center gap-1"
                   href="/trends"
                 >
                   Explore Trends <span>→</span>
                 </a>
-              </div>
+              </div> */}
             </div>
           </div>
         ) : (
           <>
-            <header className="h-12 border-b px-4 flex items-center text-sm text-muted-foreground">Chat • Tools sandbox</header>
-            <div ref={listRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+            <header className="h-10 border-b px-4 flex items-center text-xs text-muted-foreground">Tools workspace</header>
+            <div ref={listRef} className="flex-1 overflow-y-auto px-3 py-3 space-y-3">
               {messages.map(m => (
-            <div key={m.id} className={cn('max-w-3xl', m.role === 'user' ? 'ml-auto' : '')}>
+            <div key={m.id} className={cn('max-w-2xl', m.role === 'user' ? 'ml-auto' : '')}>
               {m.code ? (
                 <div className="relative">
                   <button
-                    className="absolute right-2 top-2 z-10 text-xs px-2 py-1 rounded-md bg-muted hover:bg-muted/80 border"
+                    className="absolute right-2 top-2 z-10 text-[10px] px-2 py-0.5 rounded-md bg-muted hover:bg-muted/80 border"
                     onClick={() => navigator.clipboard.writeText(m.content)}
                     aria-label="Copy to clipboard"
                   >
                     Copy
                   </button>
-                  <pre className="rounded-xl px-4 py-3 text-sm leading-relaxed overflow-x-auto bg-[#0b1220] text-slate-100 border border-border">
+                  <pre className="rounded-lg px-3 py-2 text-xs leading-relaxed overflow-x-auto max-h-96 bg-[#0b1220] text-slate-100 border border-border">
 <code>{m.content}</code>
                   </pre>
                 </div>
               ) : (
                 m.loading ? (
-                  <div className="rounded-xl px-4 py-3 bg-muted flex items-center gap-2 text-sm">
+                  <div className="rounded-lg px-3 py-2 bg-muted/70 flex items-center gap-1.5 text-xs">
                     <span className="inline-block w-2 h-2 rounded-full bg-primary animate-pulse"></span>
                     <span className="inline-block w-2 h-2 rounded-full bg-primary/80 animate-pulse [animation-delay:150ms]"></span>
                     <span className="inline-block w-2 h-2 rounded-full bg-primary/60 animate-pulse [animation-delay:300ms]"></span>
                   </div>
                 ) : (
-                  <div className={cn('rounded-xl px-4 py-3 whitespace-pre-wrap break-words text-sm leading-relaxed', m.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted')}>
+                  <div className={cn('rounded-lg px-3 py-2 whitespace-pre-wrap break-words text-[13px] leading-relaxed', m.role === 'user' ? 'bg-primary/90 text-primary-foreground' : 'bg-muted/70')}> 
                     {m.content}
                   </div>
                 )
@@ -304,9 +304,9 @@ const Dashboard = () => {
               ))}
             </div>
             <div className="border-t p-3">
-              <div className="max-w-3xl mx-auto flex items-center gap-2">
-                <Input placeholder="Message FortiCore… /scan /ports /report" value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={handleKeyDown} />
-                <Button onClick={handleSend} disabled={!input.trim()}>
+              <div className="max-w-2xl mx-auto flex items-center gap-2">
+                <Input className="h-10 text-sm" placeholder="Message FortiCore… /wayback domain.com /subdomain domain.com" value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={handleKeyDown} />
+                <Button className="h-10 px-3" onClick={handleSend} disabled={!input.trim()}>
                   <Send className="h-4 w-4" />
                 </Button>
               </div>
