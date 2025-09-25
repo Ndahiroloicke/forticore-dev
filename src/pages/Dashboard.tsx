@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 import { Plus, Send, LogOut, Search, BookOpen, Bot, Folder, Globe, Link, FileSearch } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { getWaybackAvailability, getWaybackSnapshots, snapshotUrl, getWaybackUrlsOnly } from '@/lib/wayback';
-import { fetchHeadersAudit, dnsLookup } from '@/lib/headers';
+import { fetchHeadersAudit, dnsLookup, techFingerprint, fetchRobots } from '@/lib/headers';
 import { getSubdomainsFromCrt } from '@/lib/subdomains';
 
 type ChatMessage = { id: string; role: 'user' | 'assistant'; content: string; code?: boolean; loading?: boolean };
@@ -204,6 +204,54 @@ const Dashboard = () => {
       return;
     }
 
+    // Slash command: /tech <url>
+    const tMatch = text.match(/^\/(tech)\s+(\S+)/i);
+    if (tMatch) {
+      const target = tMatch[2];
+      const domainTitle = toDomain(target);
+      setConversations(prev => prev.map(s => s.id === activeId ? { ...s, title: domainTitle || s.title } : s));
+      (async () => {
+        try {
+          const data = await techFingerprint(target);
+          const json = JSON.stringify(data, null, 2);
+          const reply: ChatMessage = { id: `m${Date.now()}`, role: 'assistant', content: json, code: true };
+          setMessages(prev => [...prev.filter(m => !m.loading), reply]);
+          setConversations(prev => prev.map(s => s.id === activeId ? { ...s, messages: [...s.messages.filter(m=>!m.loading), reply] } : s));
+          setLoading(false);
+        } catch (e: any) {
+          const err: ChatMessage = { id: `m${Date.now()}`, role: 'assistant', content: `Tech error: ${e.message}` };
+          setMessages(prev => [...prev.filter(m => !m.loading), err]);
+          setConversations(prev => prev.map(s => s.id === activeId ? { ...s, messages: [...s.messages.filter(m=>!m.loading), err] } : s));
+          setLoading(false);
+        }
+      })();
+      return;
+    }
+
+    // Slash command: /robots <url>
+    const rMatch = text.match(/^\/(robots)\s+(\S+)/i);
+    if (rMatch) {
+      const target = rMatch[2];
+      const domainTitle = toDomain(target);
+      setConversations(prev => prev.map(s => s.id === activeId ? { ...s, title: domainTitle || s.title } : s));
+      (async () => {
+        try {
+          const data = await fetchRobots(target);
+          const json = JSON.stringify(data, null, 2);
+          const reply: ChatMessage = { id: `m${Date.now()}`, role: 'assistant', content: json, code: true };
+          setMessages(prev => [...prev.filter(m => !m.loading), reply]);
+          setConversations(prev => prev.map(s => s.id === activeId ? { ...s, messages: [...s.messages.filter(m=>!m.loading), reply] } : s));
+          setLoading(false);
+        } catch (e: any) {
+          const err: ChatMessage = { id: `m${Date.now()}`, role: 'assistant', content: `Robots error: ${e.message}` };
+          setMessages(prev => [...prev.filter(m => !m.loading), err]);
+          setConversations(prev => prev.map(s => s.id === activeId ? { ...s, messages: [...s.messages.filter(m=>!m.loading), err] } : s));
+          setLoading(false);
+        }
+      })();
+      return;
+    }
+
     // Default echo placeholder
     setTimeout(() => {
       const reply: ChatMessage = { id: `m${Date.now()}`, role: 'assistant', content: `You said: "${text}". (Tool execution placeholder)` };
@@ -316,6 +364,28 @@ const Dashboard = () => {
                       <CardTitle className="text-base">DNS lookup</CardTitle>
                     </div>
                     <CardDescription>Resolve A/AAAA/CNAME/MX/TXT/NS/CAA records via Google DNS.</CardDescription>
+                  </CardHeader>
+                </Card>
+                <Card className="cursor-pointer hover:bg-accent" onClick={() => setInput('/tech ')}>
+                  <CardHeader>
+                    <div className="flex items-center gap-2">
+                      <span className="h-6 w-6 rounded-full bg-purple-500/15 text-purple-400 grid place-items-center">
+                        <FileSearch className="h-3.5 w-3.5" />
+                      </span>
+                      <CardTitle className="text-base">Tech fingerprint</CardTitle>
+                    </div>
+                    <CardDescription>Detect server, CDN and framework from headers/HTML.</CardDescription>
+                  </CardHeader>
+                </Card>
+                <Card className="cursor-pointer hover:bg-accent" onClick={() => setInput('/robots ')}>
+                  <CardHeader>
+                    <div className="flex items-center gap-2">
+                      <span className="h-6 w-6 rounded-full bg-purple-500/15 text-purple-400 grid place-items-center">
+                        <FileSearch className="h-3.5 w-3.5" />
+                      </span>
+                      <CardTitle className="text-base">robots/sitemap</CardTitle>
+                    </div>
+                    <CardDescription>Fetch robots.txt and sitemap.xml for crawl hints.</CardDescription>
                   </CardHeader>
                 </Card>
               </div>

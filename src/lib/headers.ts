@@ -12,4 +12,18 @@ export async function dnsLookup(name: string, type: string = 'A') {
   return json;
 }
 
+export async function techFingerprint(url: string) {
+  const res = await fetch(`/api/tech?url=${encodeURIComponent(url)}`, { cache: 'no-store' });
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.error || 'Tech fingerprint failed');
+  return json;
+}
+
+export async function fetchRobots(url: string) {
+  const res = await fetch(`/api/robots?url=${encodeURIComponent(url)}`, { cache: 'no-store' });
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.error || 'Robots fetch failed');
+  return json;
+}
+
 
