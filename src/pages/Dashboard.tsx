@@ -277,7 +277,7 @@ const Dashboard = () => {
               <div className="mt-12 text-center">
                 <button
                   className="text-sm font-medium text-foreground/90 underline decoration-purple-600 decoration-2 underline-offset-4 hover:opacity-90 inline-flex items-center gap-1"
-                  onClick={() => setInput('/wayback example.com')}
+                  onClick={() => { window.location.href = '/trends'; }}
                 >
                   Explore Trends <span>→</span>
                 </button>
