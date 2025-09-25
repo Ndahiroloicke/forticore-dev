@@ -34,7 +34,7 @@ export default async function (req: VercelRequest, res: VercelResponse) {
     if (mode === 'urls') {
       // Use the exact curl command format: url=example.com/*&output=json&fl=original&collapse=urlkey
       const targetUrl = url.endsWith('/*') ? url : `${url}/*`;
-      const cdxUrl = `${WAYBACK_CDX_URL}?url=${encodeURIComponent(targetUrl)}&output=json&fl=original&collapse=urlkey&limit=${limit || 50}`;
+      const cdxUrl = `${WAYBACK_CDX_URL}?url=${encodeURIComponent(targetUrl)}&output=json&fl=original&collapse=urlkey&limit=${limit || 200}`;
       
       // Try direct access first
       try {
@@ -86,13 +86,15 @@ export default async function (req: VercelRequest, res: VercelResponse) {
       for (const proxy of PROXY_SERVICES) {
         try {
           const proxyUrl = `${proxy}${encodeURIComponent(cdxUrl)}`;
+          const controller = new AbortController();
+          const id = setTimeout(() => controller.abort(), 10000);
           const proxyRes = await fetch(proxyUrl, {
             headers: {
               'User-Agent': 'FortiCore-Bot/1.0',
               'Accept': 'application/json'
             },
-            timeout: 10000 // 10 second timeout
-          });
+            signal: controller.signal
+          }).finally(() => clearTimeout(id));
 
           if (proxyRes.ok) {
             const proxyText = await proxyRes.text();
@@ -192,13 +194,15 @@ export default async function (req: VercelRequest, res: VercelResponse) {
       for (const proxy of PROXY_SERVICES) {
         try {
           const proxyUrl = `${proxy}${encodeURIComponent(cdxUrl)}`;
+          const controller = new AbortController();
+          const id = setTimeout(() => controller.abort(), 10000);
           const proxyRes = await fetch(proxyUrl, {
             headers: {
               'User-Agent': 'FortiCore-Bot/1.0',
               'Accept': 'application/json'
             },
-            timeout: 10000
-          });
+            signal: controller.signal
+          }).finally(() => clearTimeout(id));
 
           if (proxyRes.ok) {
             const proxyText = await proxyRes.text();

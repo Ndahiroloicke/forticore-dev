@@ -16,6 +16,12 @@ const Trends = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Force dark theme like the dashboard
+  useEffect(() => {
+    document.documentElement.classList.add('dark');
+    return () => {};
+  }, []);
+
   useEffect(() => {
     const load = async () => {
       try {
@@ -61,7 +67,7 @@ const Trends = () => {
   if (!data) return null;
 
   return (
-    <div className="min-h-screen p-6 space-y-6 bg-background">
+    <div className="min-h-screen p-6 space-y-6 bg-background dark">
       <div>
         <h1 className="text-3xl font-heading font-semibold">Global Internet Trends</h1>
         <p className="text-muted-foreground">Timeframe: {data.timeframe} • Source: SANS ISC</p>
