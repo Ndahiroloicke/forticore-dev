@@ -46,7 +46,6 @@ const App = () => (
             {/* Public app routes with site Layout */}
             <Route element={<Layout />}> 
               <Route path="/" element={<Index />} />
-              <Route path="/trends" element={<Trends />} />
               <Route path="/installation" element={<Installation />} />
               <Route path="/documentation" element={<Documentation />} />
               <Route path="/quick-start" element={<QuickStart />} />
@@ -58,6 +57,9 @@ const App = () => (
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Route>
+
+            {/* Trends standalone (no layout) */}
+            <Route path="/trends" element={<Trends />} />
           </Routes>
         </AuthProvider>
       </BrowserRouter>

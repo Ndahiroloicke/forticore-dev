@@ -56,23 +56,23 @@ const Trends = () => {
     load();
   }, []);
 
-  if (loading) return <div className="min-h-[60vh] grid place-items-center text-muted-foreground">Loading Rwanda trends…</div>;
-  if (error) return <div className="min-h-[60vh] grid place-items-center text-red-500">{error}</div>;
+  if (loading) return <div className="min-h-screen grid place-items-center text-muted-foreground">Loading global trends…</div>;
+  if (error) return <div className="min-h-screen grid place-items-center text-red-500">{error}</div>;
   if (!data) return null;
 
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen p-6 space-y-6 bg-background">
       <div>
-        <h1 className="text-3xl font-heading font-semibold">Rwanda Internet Trends</h1>
-        <p className="text-muted-foreground">Timeframe: {data.timeframe}</p>
+        <h1 className="text-3xl font-heading font-semibold">Global Internet Trends</h1>
+        <p className="text-muted-foreground">Timeframe: {data.timeframe} • Source: SANS ISC</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Card className="p-4">
+        <Card className="p-4 min-h-[22rem]">
           <h2 className="font-medium mb-2">Top Targeted Ports</h2>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data.topPorts}>
+              <BarChart data={data.topPorts.length ? data.topPorts : [{ port: 'N/A', count: 0 }] }>
                 <XAxis dataKey="port" />
                 <YAxis />
                 <Tooltip />
@@ -82,7 +82,7 @@ const Trends = () => {
           </div>
         </Card>
 
-        <Card className="p-4">
+        <Card className="p-4 min-h-[22rem]">
           <h2 className="font-medium mb-2">Top Classifications</h2>
           <ul className="space-y-2 text-sm">
             {data.topClassifications.map((c) => (
@@ -95,11 +95,11 @@ const Trends = () => {
         </Card>
       </div>
 
-      <Card className="p-4">
+      <Card className="p-4 min-h-[22rem]">
         <h2 className="font-medium mb-2">Activity Over Time</h2>
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data.timeseries}>
+            <BarChart data={data.timeseries.length ? data.timeseries : [{ date: 'N/A', count: 0 }] }>
               <XAxis dataKey="date" hide />
               <YAxis />
               <Tooltip />
@@ -108,8 +108,6 @@ const Trends = () => {
           </ResponsiveContainer>
         </div>
       </Card>
-
-      <div className="text-xs text-muted-foreground">Source: GreyNoise (or demo data if no API key)</div>
     </div>
   );
 };
