@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { Plus, Send, LogOut, Search, BookOpen, Bot, Folder, Globe, Link, FileSearch } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { getWaybackAvailability, getWaybackSnapshots, snapshotUrl, getWaybackUrlsOnly } from '@/lib/wayback';
+import { fetchHeadersAudit, dnsLookup } from '@/lib/headers';
 import { getSubdomainsFromCrt } from '@/lib/subdomains';
 
 type ChatMessage = { id: string; role: 'user' | 'assistant'; content: string; code?: boolean; loading?: boolean };
@@ -156,6 +157,53 @@ const Dashboard = () => {
       return;
     }
 
+    // Slash command: /headers <url>
+    const hMatch = text.match(/^\/(headers)\s+(\S+)/i);
+    if (hMatch) {
+      const target = hMatch[2];
+      const domainTitle = toDomain(target);
+      setConversations(prev => prev.map(s => s.id === activeId ? { ...s, title: domainTitle || s.title } : s));
+      (async () => {
+        try {
+          const data = await fetchHeadersAudit(target);
+          const json = JSON.stringify(data, null, 2);
+          const reply: ChatMessage = { id: `m${Date.now()}`, role: 'assistant', content: json, code: true };
+          setMessages(prev => [...prev.filter(m => !m.loading), reply]);
+          setConversations(prev => prev.map(s => s.id === activeId ? { ...s, messages: [...s.messages.filter(m=>!m.loading), reply] } : s));
+          setLoading(false);
+        } catch (e: any) {
+          const err: ChatMessage = { id: `m${Date.now()}`, role: 'assistant', content: `Headers error: ${e.message}` };
+          setMessages(prev => [...prev.filter(m => !m.loading), err]);
+          setConversations(prev => prev.map(s => s.id === activeId ? { ...s, messages: [...s.messages.filter(m=>!m.loading), err] } : s));
+          setLoading(false);
+        }
+      })();
+      return;
+    }
+
+    // Slash command: /dns <name> [type]
+    const dMatch = text.match(/^\/(dns)\s+(\S+)(?:\s+(A|AAAA|CNAME|MX|TXT|NS|CAA))?/i);
+    if (dMatch) {
+      const name = dMatch[2];
+      const qtype = dMatch[3] || 'A';
+      (async () => {
+        try {
+          const data = await dnsLookup(name, qtype);
+          const json = JSON.stringify(data, null, 2);
+          const reply: ChatMessage = { id: `m${Date.now()}`, role: 'assistant', content: json, code: true };
+          setMessages(prev => [...prev.filter(m => !m.loading), reply]);
+          setConversations(prev => prev.map(s => s.id === activeId ? { ...s, messages: [...s.messages.filter(m=>!m.loading), reply] } : s));
+          setLoading(false);
+        } catch (e: any) {
+          const err: ChatMessage = { id: `m${Date.now()}`, role: 'assistant', content: `DNS error: ${e.message}` };
+          setMessages(prev => [...prev.filter(m => !m.loading), err]);
+          setConversations(prev => prev.map(s => s.id === activeId ? { ...s, messages: [...s.messages.filter(m=>!m.loading), err] } : s));
+          setLoading(false);
+        }
+      })();
+      return;
+    }
+
     // Default echo placeholder
     setTimeout(() => {
       const reply: ChatMessage = { id: `m${Date.now()}`, role: 'assistant', content: `You said: "${text}". (Tool execution placeholder)` };
@@ -225,7 +273,7 @@ const Dashboard = () => {
           <div className="flex-1 grid place-items-center px-4">
             <div className="max-w-3xl w-full">
               <h1 className="text-center text-3xl sm:text-4xl font-semibold mb-6">What are you working on?</h1>
-              <div className="flex flex-row  sm:grid-cols-4 gap-3 mb-6">
+              <div className="flex flex-row gap-3 mb-6 flex-wrap">
                 <Card className="cursor-pointer hover:bg-accent" onClick={() => setInput('/subdomains ')}>
                   <CardHeader>
                     <div className="flex items-center gap-2">
@@ -246,6 +294,28 @@ const Dashboard = () => {
                       <CardTitle className="text-base">Wayback lookup</CardTitle>
                     </div>
                     <CardDescription>Check archived snapshots and quickly open the closest capture.</CardDescription>
+                  </CardHeader>
+                </Card>
+                <Card className="cursor-pointer hover:bg-accent" onClick={() => setInput('/headers ')}>
+                  <CardHeader>
+                    <div className="flex items-center gap-2">
+                      <span className="h-6 w-6 rounded-full bg-purple-500/15 text-purple-400 grid place-items-center">
+                        <Link className="h-3.5 w-3.5" />
+                      </span>
+                      <CardTitle className="text-base">Headers audit</CardTitle>
+                    </div>
+                    <CardDescription>Check HSTS, CSP, XFO and more for a target URL.</CardDescription>
+                  </CardHeader>
+                </Card>
+                <Card className="cursor-pointer hover:bg-accent" onClick={() => setInput('/dns ')}>
+                  <CardHeader>
+                    <div className="flex items-center gap-2">
+                      <span className="h-6 w-6 rounded-full bg-purple-500/15 text-purple-400 grid place-items-center">
+                        <Globe className="h-3.5 w-3.5" />
+                      </span>
+                      <CardTitle className="text-base">DNS lookup</CardTitle>
+                    </div>
+                    <CardDescription>Resolve A/AAAA/CNAME/MX/TXT/NS/CAA records via Google DNS.</CardDescription>
                   </CardHeader>
                 </Card>
               </div>
