@@ -173,8 +173,14 @@ const Dashboard = () => {
   };
 
   const showSidebar = messages.length > 0;
+  // Force dark theme for dashboard
+  useEffect(() => {
+    document.documentElement.classList.add('dark');
+    return () => {};
+  }, []);
+
   return (
-    <div className={cn('grid h-screen gap-0 bg-background overflow-hidden', showSidebar ? 'grid-cols-1 md:grid-cols-[260px_1fr]' : 'grid-cols-1')}>
+    <div className={cn('grid h-screen gap-0 bg-background overflow-hidden dark', showSidebar ? 'grid-cols-1 md:grid-cols-[260px_1fr]' : 'grid-cols-1')}>
       {/* Sidebar */}
       {showSidebar && (
       <aside className="hidden md:flex flex-col border-r bg-background sticky top-0 h-screen overflow-hidden">
@@ -253,12 +259,12 @@ const Dashboard = () => {
                 </Button>
               </div>
               <div className="mt-12 text-center">
-                <button
+                <a
                   className="text-sm font-medium text-foreground/90 underline decoration-purple-600 decoration-2 underline-offset-4 hover:opacity-90 inline-flex items-center gap-1"
-                  onClick={() => setInput('/wayback example.com')}
+                  href="/trends"
                 >
                   Explore Trends <span>→</span>
-                </button>
+                </a>
               </div>
             </div>
           </div>

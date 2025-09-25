@@ -20,6 +20,7 @@ import FAQ from "@/pages/faq";
 import Login from "@/pages/Login";
 import Signup from "@/pages/Signup";
 import Dashboard from "@/pages/Dashboard";
+import Trends from "@/pages/Trends";
 import AuthCallback from "@/pages/AuthCallback";
 
 const queryClient = new QueryClient();
@@ -45,6 +46,7 @@ const App = () => (
             {/* Public app routes with site Layout */}
             <Route element={<Layout />}> 
               <Route path="/" element={<Index />} />
+              <Route path="/trends" element={<Trends />} />
               <Route path="/installation" element={<Installation />} />
               <Route path="/documentation" element={<Documentation />} />
               <Route path="/quick-start" element={<QuickStart />} />

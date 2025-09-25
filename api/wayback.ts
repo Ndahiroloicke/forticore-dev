@@ -68,7 +68,7 @@ export default async function (req: VercelRequest, res: VercelResponse) {
                 console.error('Failed to parse inner JSON from CDX text:', innerError);
                 return res.status(500).json({ error: 'Failed to parse CDX response as JSON.', rawResponse: cdxText.substring(0, 200) });
               }
-            } else {
+          } else {
               console.error('CDX response is not valid JSON and no JSON array found:', cdxText);
               return res.status(500).json({ error: 'CDX response is not valid JSON.', rawResponse: cdxText.substring(0, 200) });
             }
