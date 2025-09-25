@@ -367,8 +367,8 @@ const Dashboard = () => {
           <div className="flex-1 grid place-items-center px-4">
             <div className="max-w-3xl w-full">
               <h1 className="text-center text-3xl sm:text-4xl font-semibold mb-6">What are you working on?</h1>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                <Card className="cursor-pointer hover:bg-accent" onClick={() => setInput('/subdomains ')}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+                <Card className="cursor-pointer hover:bg-accent h-full" onClick={() => setInput('/subdomains ')}>
                   <CardHeader>
                     <div className="flex items-center gap-2">
                       <span className="h-6 w-6 rounded-full bg-purple-500/15 text-purple-400 grid place-items-center">
@@ -379,7 +379,7 @@ const Dashboard = () => {
                     <CardDescription>Find subdomains for a target domain using multiple sources.</CardDescription>
                   </CardHeader>
                 </Card>
-                <Card className="cursor-pointer hover:bg-accent" onClick={() => setInput('/wayback ')}>
+                <Card className="cursor-pointer hover:bg-accent h-full" onClick={() => setInput('/wayback ')}>
                   <CardHeader>
                     <div className="flex items-center gap-2">
                       <span className="h-6 w-6 rounded-full bg-purple-500/15 text-purple-400 grid place-items-center">
@@ -390,7 +390,7 @@ const Dashboard = () => {
                     <CardDescription>Check archived snapshots and quickly open the closest capture.</CardDescription>
                   </CardHeader>
                 </Card>
-                <Card className="cursor-pointer hover:bg-accent" onClick={() => setInput('/headers ')}>
+                <Card className="cursor-pointer hover:bg-accent h-full" onClick={() => setInput('/headers ')}>
                   <CardHeader>
                     <div className="flex items-center gap-2">
                       <span className="h-6 w-6 rounded-full bg-purple-500/15 text-purple-400 grid place-items-center">
@@ -401,7 +401,7 @@ const Dashboard = () => {
                     <CardDescription>Check HSTS, CSP, XFO and more for a target URL.</CardDescription>
                   </CardHeader>
                 </Card>
-                <Card className="cursor-pointer hover:bg-accent" onClick={() => setInput('/dns ')}>
+                <Card className="cursor-pointer hover:bg-accent h-full" onClick={() => setInput('/dns ')}>
                   <CardHeader>
                     <div className="flex items-center gap-2">
                       <span className="h-6 w-6 rounded-full bg-purple-500/15 text-purple-400 grid place-items-center">
@@ -412,7 +412,7 @@ const Dashboard = () => {
                     <CardDescription>Resolve A/AAAA/CNAME/MX/TXT/NS/CAA records via Google DNS.</CardDescription>
                   </CardHeader>
                 </Card>
-                <Card className="cursor-pointer hover:bg-accent" onClick={() => setInput('/tech ')}>
+                <Card className="cursor-pointer hover:bg-accent h-full" onClick={() => setInput('/tech ')}>
                   <CardHeader>
                     <div className="flex items-center gap-2">
                       <span className="h-6 w-6 rounded-full bg-purple-500/15 text-purple-400 grid place-items-center">
@@ -423,7 +423,7 @@ const Dashboard = () => {
                     <CardDescription>Detect server, CDN and framework from headers/HTML.</CardDescription>
                   </CardHeader>
                 </Card>
-                <Card className="cursor-pointer hover:bg-accent" onClick={() => setInput('/robots ')}>
+                <Card className="cursor-pointer hover:bg-accent h-full" onClick={() => setInput('/robots ')}>
                   <CardHeader>
                     <div className="flex items-center gap-2">
                       <span className="h-6 w-6 rounded-full bg-purple-500/15 text-purple-400 grid place-items-center">
@@ -434,7 +434,7 @@ const Dashboard = () => {
                     <CardDescription>Fetch robots.txt and sitemap.xml for crawl hints.</CardDescription>
                   </CardHeader>
                 </Card>
-                <Card className="cursor-pointer hover:bg-accent" onClick={() => setInput('/tls ')}>
+                <Card className="cursor-pointer hover:bg-accent h-full" onClick={() => setInput('/tls ')}>
                   <CardHeader>
                     <div className="flex items-center gap-2">
                       <span className="h-6 w-6 rounded-full bg-purple-500/15 text-purple-400 grid place-items-center">
@@ -445,7 +445,7 @@ const Dashboard = () => {
                     <CardDescription>Check HTTPS configuration via SSL Labs public API.</CardDescription>
                   </CardHeader>
                 </Card>
-                <Card className="cursor-pointer hover:bg-accent" onClick={() => setInput('/content ')}>
+                <Card className="cursor-pointer hover:bg-accent h-full" onClick={() => setInput('/content ')}>
                   <CardHeader>
                     <div className="flex items-center gap-2">
                       <span className="h-6 w-6 rounded-full bg-purple-500/15 text-purple-400 grid place-items-center">
