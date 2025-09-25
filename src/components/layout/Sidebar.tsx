@@ -114,14 +114,7 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
         "flex flex-col",
         isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
       )}>
-        <div className="flex-1 overflow-y-auto">
-          <div className="p-4 border-b border-border/50 flex items-center justify-center">
-            <Link to="/" className="inline-flex items-center" onClick={onClose}>
-              <Shield className="h-6 w-6 mr-2 text-primary" />
-              <span className="font-bold text-xl">FortiCore</span>
-            </Link>
-          </div>
-          
+        <div className="flex-1 overflow-y-auto">          
           <nav className="p-4">
             <NavItem 
               to="/" 
