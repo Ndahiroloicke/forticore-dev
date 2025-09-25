@@ -7,6 +7,7 @@ import { Plus, Send, LogOut, Search, BookOpen, Bot, Folder, Globe, Link, FileSea
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { getWaybackAvailability, getWaybackSnapshots, snapshotUrl, getWaybackUrlsOnly } from '@/lib/wayback';
 import { getSubdomainsFromCrt } from '@/lib/subdomains';
+import { discoverTechnologies } from '@/lib/tech';
 
 type ChatMessage = { id: string; role: 'user' | 'assistant'; content: string; code?: boolean; loading?: boolean };
 
@@ -156,6 +157,38 @@ const Dashboard = () => {
       return;
     }
 
+    // Slash command: /tech <url>
+    const techMatch = text.match(/^\/(tech|technology)\s+(\S+)/i);
+    if (techMatch) {
+      const target = techMatch[2];
+      const domainTitle = toDomain(target);
+      setConversations(prev => prev.map(s => s.id === activeId ? { ...s, title: domainTitle || s.title } : s));
+      (async () => {
+        try {
+          const data = await discoverTechnologies(target);
+          const json = JSON.stringify(data, null, 2);
+          const reply: ChatMessage = { id: `m${Date.now()}`, role: 'assistant', content: json, code: true };
+          setMessages(prev => [...prev.filter(m => !m.loading), reply]);
+          setConversations(prev => prev.map(s => s.id === activeId ? { ...s, messages: [...s.messages.filter(m=>!m.loading), reply] } : s));
+          setLoading(false);
+        } catch (e: any) {
+          let errorMessage = `Technology discovery error: ${e.message}`;
+          if (e.message.includes('API key is required')) {
+            errorMessage = 'Technology discovery requires a Wappalyzer API key. Please set your API key in the environment variables or contact support.';
+          } else if (e.message.includes('Rate limit exceeded')) {
+            errorMessage = 'Rate limit exceeded. Please try again later.';
+          } else if (e.message.includes('Invalid API key')) {
+            errorMessage = 'Invalid Wappalyzer API key. Please check your API key configuration.';
+          }
+          const err: ChatMessage = { id: `m${Date.now()}`, role: 'assistant', content: errorMessage };
+          setMessages(prev => [...prev.filter(m => !m.loading), err]);
+          setConversations(prev => prev.map(s => s.id === activeId ? { ...s, messages: [...s.messages.filter(m=>!m.loading), err] } : s));
+          setLoading(false);
+        }
+      })();
+      return;
+    }
+
     // Default echo placeholder
     setTimeout(() => {
       const reply: ChatMessage = { id: `m${Date.now()}`, role: 'assistant', content: `You said: "${text}". (Tool execution placeholder)` };
@@ -219,7 +252,7 @@ const Dashboard = () => {
           <div className="flex-1 grid place-items-center px-4">
             <div className="max-w-3xl w-full">
               <h1 className="text-center text-3xl sm:text-4xl font-semibold mb-6">What are you working on?</h1>
-              <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 mb-6">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
                 <Card className="cursor-pointer hover:bg-accent" onClick={() => setInput('/subdomains ')}>
                   <CardHeader>
                     <div className="flex items-center gap-2">
@@ -231,26 +264,15 @@ const Dashboard = () => {
                     <CardDescription>Find subdomains for a target domain using multiple sources.</CardDescription>
                   </CardHeader>
                 </Card>
-                <Card className="cursor-pointer hover:bg-accent" onClick={() => setInput('/fuzz ')}>
-                  <CardHeader>
-                    <div className="flex items-center gap-2">
-                      <span className="h-6 w-6 rounded-full bg-purple-500/15 text-purple-400 grid place-items-center">
-                        <Link className="h-3.5 w-3.5" />
-                      </span>
-                      <CardTitle className="text-base">URL fuzzing</CardTitle>
-                    </div>
-                    <CardDescription>Probe paths and parameters to uncover hidden endpoints.</CardDescription>
-                  </CardHeader>
-                </Card>
-                <Card className="cursor-pointer hover:bg-accent" onClick={() => setInput('/content ')}>
+                <Card className="cursor-pointer hover:bg-accent" onClick={() => setInput('/tech ')}>
                   <CardHeader>
                     <div className="flex items-center gap-2">
                       <span className="h-6 w-6 rounded-full bg-purple-500/15 text-purple-400 grid place-items-center">
                         <FileSearch className="h-3.5 w-3.5" />
                       </span>
-                      <CardTitle className="text-base">Content discovery</CardTitle>
+                      <CardTitle className="text-base">Technology discovery</CardTitle>
                     </div>
-                    <CardDescription>Enumerate files, directories and assets exposed by the site.</CardDescription>
+                    <CardDescription>Discover technologies, frameworks, and tools used by a website using Wappalyzer.</CardDescription>
                   </CardHeader>
                 </Card>
                 <Card className="cursor-pointer hover:bg-accent" onClick={() => setInput('/wayback ')}>
@@ -277,7 +299,7 @@ const Dashboard = () => {
               <div className="mt-12 text-center">
                 <button
                   className="text-sm font-medium text-foreground/90 underline decoration-purple-600 decoration-2 underline-offset-4 hover:opacity-90 inline-flex items-center gap-1"
-                  onClick={() => { window.location.href = '/trends'; }}
+                  onClick={() => setInput('/wayback example.com')}
                 >
                   Explore Trends <span>→</span>
                 </button>

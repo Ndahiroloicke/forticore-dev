@@ -21,7 +21,6 @@ import Login from "@/pages/Login";
 import Signup from "@/pages/Signup";
 import Dashboard from "@/pages/Dashboard";
 import AuthCallback from "@/pages/AuthCallback";
-import Trends from "@/pages/Trends";
 
 const queryClient = new QueryClient();
 
@@ -37,7 +36,6 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
-            <Route path="/trends" element={<Trends />} />
 
             {/* Protected app routes without public Layout (custom UI) */}
             <Route element={<ProtectedRoute />}>
