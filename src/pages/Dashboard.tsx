@@ -20,6 +20,7 @@ const Dashboard = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showMore, setShowMore] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
 
   const toDomain = (input: string) => {
@@ -367,7 +368,7 @@ const Dashboard = () => {
           <div className="flex-1 grid place-items-center px-4">
             <div className="max-w-3xl w-full">
               <h1 className="text-center text-3xl sm:text-4xl font-semibold mb-6">What are you working on?</h1>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 mb-6">
                 <Card className="cursor-pointer hover:bg-accent h-full" onClick={() => setInput('/subdomains ')}>
                   <CardHeader>
                     <div className="flex items-center gap-2">
@@ -412,6 +413,7 @@ const Dashboard = () => {
                     <CardDescription>Resolve A/AAAA/CNAME/MX/TXT/NS/CAA records via Google DNS.</CardDescription>
                   </CardHeader>
                 </Card>
+                {showMore && (
                 <Card className="cursor-pointer hover:bg-accent h-full" onClick={() => setInput('/tech ')}>
                   <CardHeader>
                     <div className="flex items-center gap-2">
@@ -423,6 +425,8 @@ const Dashboard = () => {
                     <CardDescription>Detect server, CDN and framework from headers/HTML.</CardDescription>
                   </CardHeader>
                 </Card>
+                )}
+                {showMore && (
                 <Card className="cursor-pointer hover:bg-accent h-full" onClick={() => setInput('/robots ')}>
                   <CardHeader>
                     <div className="flex items-center gap-2">
@@ -434,6 +438,8 @@ const Dashboard = () => {
                     <CardDescription>Fetch robots.txt and sitemap.xml for crawl hints.</CardDescription>
                   </CardHeader>
                 </Card>
+                )}
+                {showMore && (
                 <Card className="cursor-pointer hover:bg-accent h-full" onClick={() => setInput('/tls ')}>
                   <CardHeader>
                     <div className="flex items-center gap-2">
@@ -445,6 +451,8 @@ const Dashboard = () => {
                     <CardDescription>Check HTTPS configuration via SSL Labs public API.</CardDescription>
                   </CardHeader>
                 </Card>
+                )}
+                {showMore && (
                 <Card className="cursor-pointer hover:bg-accent h-full" onClick={() => setInput('/content ')}>
                   <CardHeader>
                     <div className="flex items-center gap-2">
@@ -456,6 +464,12 @@ const Dashboard = () => {
                     <CardDescription>Probe common endpoints like robots, sitemap, admin, backups.</CardDescription>
                   </CardHeader>
                 </Card>
+                )}
+              </div>
+              <div className="text-center mb-4">
+                <button className="text-xs text-primary underline hover:opacity-90" onClick={() => setShowMore(v => !v)}>
+                  {showMore ? 'Hide tools' : 'More tools'}
+                </button>
               </div>
               <div className="flex items-center gap-2">
                 <button className="h-11 w-11 rounded-full bg-muted grid place-items-center"><Plus className="h-5 w-5" /></button>
