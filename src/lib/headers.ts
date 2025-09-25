@@ -26,4 +26,18 @@ export async function fetchRobots(url: string) {
   return json;
 }
 
+export async function fetchTlsGrade(host: string) {
+  const res = await fetch(`/api/tls?host=${encodeURIComponent(host)}`, { cache: 'no-store' });
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.error || 'TLS check failed');
+  return json;
+}
+
+export async function contentDiscovery(url: string) {
+  const res = await fetch(`/api/content?url=${encodeURIComponent(url)}`, { cache: 'no-store' });
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.error || 'Content discovery failed');
+  return json;
+}
+
 

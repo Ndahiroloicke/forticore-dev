@@ -3,10 +3,10 @@ import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-import { Plus, Send, LogOut, Search, BookOpen, Bot, Folder, Globe, Link, FileSearch } from 'lucide-react';
+import { Plus, Send, LogOut, Search, BookOpen, Bot, Folder, Globe, Link, FileSearch, Shield } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { getWaybackAvailability, getWaybackSnapshots, snapshotUrl, getWaybackUrlsOnly } from '@/lib/wayback';
-import { fetchHeadersAudit, dnsLookup, techFingerprint, fetchRobots } from '@/lib/headers';
+import { fetchHeadersAudit, dnsLookup, techFingerprint, fetchRobots, fetchTlsGrade, contentDiscovery } from '@/lib/headers';
 import { getSubdomainsFromCrt } from '@/lib/subdomains';
 
 type ChatMessage = { id: string; role: 'user' | 'assistant'; content: string; code?: boolean; loading?: boolean };
@@ -252,6 +252,52 @@ const Dashboard = () => {
       return;
     }
 
+    // Slash command: /tls <host>
+    const tlsMatch = text.match(/^\/(tls)\s+(\S+)/i);
+    if (tlsMatch) {
+      const host = tlsMatch[2];
+      (async () => {
+        try {
+          const data = await fetchTlsGrade(host);
+          const json = JSON.stringify(data, null, 2);
+          const reply: ChatMessage = { id: `m${Date.now()}`, role: 'assistant', content: json, code: true };
+          setMessages(prev => [...prev.filter(m => !m.loading), reply]);
+          setConversations(prev => prev.map(s => s.id === activeId ? { ...s, messages: [...s.messages.filter(m=>!m.loading), reply] } : s));
+          setLoading(false);
+        } catch (e: any) {
+          const err: ChatMessage = { id: `m${Date.now()}`, role: 'assistant', content: `TLS error: ${e.message}` };
+          setMessages(prev => [...prev.filter(m => !m.loading), err]);
+          setConversations(prev => prev.map(s => s.id === activeId ? { ...s, messages: [...s.messages.filter(m=>!m.loading), err] } : s));
+          setLoading(false);
+        }
+      })();
+      return;
+    }
+
+    // Slash command: /content <url>
+    const cMatch = text.match(/^\/(content)\s+(\S+)/i);
+    if (cMatch) {
+      const target = cMatch[2];
+      const domainTitle = toDomain(target);
+      setConversations(prev => prev.map(s => s.id === activeId ? { ...s, title: domainTitle || s.title } : s));
+      (async () => {
+        try {
+          const data = await contentDiscovery(target);
+          const json = JSON.stringify(data, null, 2);
+          const reply: ChatMessage = { id: `m${Date.now()}`, role: 'assistant', content: json, code: true };
+          setMessages(prev => [...prev.filter(m => !m.loading), reply]);
+          setConversations(prev => prev.map(s => s.id === activeId ? { ...s, messages: [...s.messages.filter(m=>!m.loading), reply] } : s));
+          setLoading(false);
+        } catch (e: any) {
+          const err: ChatMessage = { id: `m${Date.now()}`, role: 'assistant', content: `Content discovery error: ${e.message}` };
+          setMessages(prev => [...prev.filter(m => !m.loading), err]);
+          setConversations(prev => prev.map(s => s.id === activeId ? { ...s, messages: [...s.messages.filter(m=>!m.loading), err] } : s));
+          setLoading(false);
+        }
+      })();
+      return;
+    }
+
     // Default echo placeholder
     setTimeout(() => {
       const reply: ChatMessage = { id: `m${Date.now()}`, role: 'assistant', content: `You said: "${text}". (Tool execution placeholder)` };
@@ -386,6 +432,28 @@ const Dashboard = () => {
                       <CardTitle className="text-base">robots/sitemap</CardTitle>
                     </div>
                     <CardDescription>Fetch robots.txt and sitemap.xml for crawl hints.</CardDescription>
+                  </CardHeader>
+                </Card>
+                <Card className="cursor-pointer hover:bg-accent" onClick={() => setInput('/tls ')}>
+                  <CardHeader>
+                    <div className="flex items-center gap-2">
+                      <span className="h-6 w-6 rounded-full bg-purple-500/15 text-purple-400 grid place-items-center">
+                        <Shield className="h-3.5 w-3.5" />
+                      </span>
+                      <CardTitle className="text-base">TLS grade</CardTitle>
+                    </div>
+                    <CardDescription>Check HTTPS configuration via SSL Labs public API.</CardDescription>
+                  </CardHeader>
+                </Card>
+                <Card className="cursor-pointer hover:bg-accent" onClick={() => setInput('/content ')}>
+                  <CardHeader>
+                    <div className="flex items-center gap-2">
+                      <span className="h-6 w-6 rounded-full bg-purple-500/15 text-purple-400 grid place-items-center">
+                        <FileSearch className="h-3.5 w-3.5" />
+                      </span>
+                      <CardTitle className="text-base">Content discovery</CardTitle>
+                    </div>
+                    <CardDescription>Probe common endpoints like robots, sitemap, admin, backups.</CardDescription>
                   </CardHeader>
                 </Card>
               </div>
