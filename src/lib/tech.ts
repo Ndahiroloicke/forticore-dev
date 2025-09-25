@@ -1,4 +1,4 @@
-const TECH_API_BASE = '/api/tech-test';
+const TECH_API_BASE = '/api/tech';
 
 // Helper to normalize URL
 const normalizeUrl = (input: string): string => {
