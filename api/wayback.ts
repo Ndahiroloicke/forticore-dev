@@ -34,7 +34,7 @@ export default async function (req: VercelRequest, res: VercelResponse) {
     if (mode === 'urls') {
       // Use the exact curl command format: url=example.com/*&output=json&fl=original&collapse=urlkey
       const targetUrl = url.endsWith('/*') ? url : `${url}/*`;
-      const cdxUrl = `${WAYBACK_CDX_URL}?url=${encodeURIComponent(targetUrl)}&output=json&fl=original&collapse=urlkey&limit=${limit || 200}`;
+      const cdxUrl = `${WAYBACK_CDX_URL}?url=${encodeURIComponent(targetUrl)}&output=json&fl=original&collapse=urlkey`;
       
       // Try direct access first
       try {
@@ -136,7 +136,7 @@ export default async function (req: VercelRequest, res: VercelResponse) {
 
     } else {
       // Default mode: snapshots
-      const cdxUrl = `${WAYBACK_CDX_URL}?url=${encodeURIComponent(url)}&output=json&fl=timestamp,original,statuscode,mimetype,length&filter=statuscode:200&collapse=digest&sort=descending&limit=${limit || 5}`;
+      const cdxUrl = `${WAYBACK_CDX_URL}?url=${encodeURIComponent(url)}&output=json&fl=timestamp,original,statuscode,mimetype,length&filter=statuscode:200&collapse=digest&sort=descending`;
       
       // Try direct access first
       try {
