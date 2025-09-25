@@ -273,7 +273,7 @@ const Dashboard = () => {
           <div className="flex-1 grid place-items-center px-4">
             <div className="max-w-3xl w-full">
               <h1 className="text-center text-3xl sm:text-4xl font-semibold mb-6">What are you working on?</h1>
-              <div className="flex flex-row gap-3 mb-6 flex-wrap">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                 <Card className="cursor-pointer hover:bg-accent" onClick={() => setInput('/subdomains ')}>
                   <CardHeader>
                     <div className="flex items-center gap-2">
