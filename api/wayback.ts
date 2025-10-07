@@ -27,23 +27,41 @@ export default async function (req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    // Check availability first
-    const availabilityRes = await fetch(`${WAYBACK_AVAILABILITY_URL}?url=${encodeURIComponent(url)}`);
-    const availabilityData = await availabilityRes.json();
+    // Check availability first with timeout
+    const availabilityController = new AbortController();
+    const availabilityTimeout = setTimeout(() => availabilityController.abort(), 5000);
+    
+    let availabilityData;
+    try {
+      const availabilityRes = await fetch(`${WAYBACK_AVAILABILITY_URL}?url=${encodeURIComponent(url)}`, {
+        signal: availabilityController.signal
+      });
+      availabilityData = await availabilityRes.json();
+    } catch (err) {
+      console.log('Availability check failed, continuing without it');
+      availabilityData = null;
+    } finally {
+      clearTimeout(availabilityTimeout);
+    }
 
     if (mode === 'urls') {
       // Use the exact curl command format: url=example.com/*&output=json&fl=original&collapse=urlkey
       const targetUrl = url.endsWith('/*') ? url : `${url}/*`;
       const cdxUrl = `${WAYBACK_CDX_URL}?url=${encodeURIComponent(targetUrl)}&output=json&fl=original&collapse=urlkey`;
       
-      // Try direct access first
+      // Try direct access first with timeout
       try {
+        const cdxController = new AbortController();
+        const cdxTimeout = setTimeout(() => cdxController.abort(), 8000);
+        
         const cdxRes = await fetch(cdxUrl, {
           headers: {
             'User-Agent': 'FortiCore-Bot/1.0',
             'Accept': 'application/json'
-          }
+          },
+          signal: cdxController.signal
         });
+        clearTimeout(cdxTimeout);
 
         if (cdxRes.status === 451) {
           return res.status(200).json({
@@ -78,16 +96,17 @@ export default async function (req: VercelRequest, res: VercelResponse) {
           const urlsOnly = cdxJson.slice(1).map((entry: string[]) => entry[0]);
           return res.status(200).json({ urls: urlsOnly, closest: availabilityData?.archived_snapshots?.closest });
         }
-      } catch (directError) {
-        console.log('Direct access failed, trying proxy services...');
+      } catch (directError: any) {
+        const isTimeout = directError.name === 'AbortError' || directError.message?.includes('aborted');
+        console.log(`Direct access failed${isTimeout ? ' (timeout)' : ''}, trying proxy services...`);
       }
 
-      // Try proxy services as fallbacks
-      for (const proxy of PROXY_SERVICES) {
+      // Try proxy services as fallbacks (limited attempts with shorter timeout)
+      for (const proxy of PROXY_SERVICES.slice(0, 2)) {
         try {
           const proxyUrl = `${proxy}${encodeURIComponent(cdxUrl)}`;
           const controller = new AbortController();
-          const id = setTimeout(() => controller.abort(), 10000);
+          const id = setTimeout(() => controller.abort(), 4000);
           const proxyRes = await fetch(proxyUrl, {
             headers: {
               'User-Agent': 'FortiCore-Bot/1.0',
@@ -138,14 +157,19 @@ export default async function (req: VercelRequest, res: VercelResponse) {
       // Default mode: snapshots
       const cdxUrl = `${WAYBACK_CDX_URL}?url=${encodeURIComponent(url)}&output=json&fl=timestamp,original,statuscode,mimetype,length&filter=statuscode:200&collapse=digest&sort=descending`;
       
-      // Try direct access first
+      // Try direct access first with timeout
       try {
+        const cdxController = new AbortController();
+        const cdxTimeout = setTimeout(() => cdxController.abort(), 8000);
+        
         const cdxRes = await fetch(cdxUrl, {
           headers: {
             'User-Agent': 'FortiCore-Bot/1.0',
             'Accept': 'application/json'
-          }
+          },
+          signal: cdxController.signal
         });
+        clearTimeout(cdxTimeout);
 
         if (cdxRes.status === 451) {
           return res.status(200).json({
@@ -190,12 +214,12 @@ export default async function (req: VercelRequest, res: VercelResponse) {
         console.log('Direct access failed for snapshots, trying proxy services...');
       }
 
-      // Try proxy services as fallbacks for snapshots
-      for (const proxy of PROXY_SERVICES) {
+      // Try proxy services as fallbacks for snapshots (limited attempts with shorter timeout)
+      for (const proxy of PROXY_SERVICES.slice(0, 2)) {
         try {
           const proxyUrl = `${proxy}${encodeURIComponent(cdxUrl)}`;
           const controller = new AbortController();
-          const id = setTimeout(() => controller.abort(), 10000);
+          const id = setTimeout(() => controller.abort(), 4000);
           const proxyRes = await fetch(proxyUrl, {
             headers: {
               'User-Agent': 'FortiCore-Bot/1.0',

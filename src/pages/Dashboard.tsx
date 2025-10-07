@@ -635,7 +635,7 @@ const Dashboard = () => {
       {showSidebar && mobileMenuOpen && (
         <div className="fixed inset-0 z-50 md:hidden">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setMobileMenuOpen(false)} />
-          <aside className="absolute left-0 top-0 bottom-0 w-[280px] border-r border-purple-200 dark:border-purple-500/20 bg-gray-50 dark:bg-[#0d1220] h-screen overflow-hidden flex flex-col">
+          <aside className="absolute left-0 top-0 bottom-0 w-full sm:w-[320px] border-r border-purple-200 dark:border-purple-500/20 bg-gray-50 dark:bg-[#0d1220] h-screen overflow-hidden flex flex-col">
             <div className="absolute top-0 right-0 w-px h-full bg-gradient-to-b from-purple-300 dark:from-purple-500/50 via-purple-200 dark:via-purple-500/20 to-transparent" />
             
             <div className="p-4 border-b border-purple-200 dark:border-purple-500/20 space-y-4">
