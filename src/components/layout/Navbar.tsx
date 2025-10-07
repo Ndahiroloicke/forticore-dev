@@ -20,6 +20,9 @@ export const Navbar = ({ toggleSidebar }: NavbarProps) => {
     setTheme(newTheme);
     document.documentElement.classList.toggle('dark');
     localStorage.setItem('theme', newTheme);
+    
+    // Dispatch custom event to notify other components/pages
+    window.dispatchEvent(new Event('themeChange'));
   };
   
   // Check if user has scrolled

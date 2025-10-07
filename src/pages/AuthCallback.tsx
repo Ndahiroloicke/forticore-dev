@@ -34,7 +34,7 @@ const AuthCallback = () => {
         
         // Short delay to show success message before redirecting
         setTimeout(() => {
-          navigate('/dashboard', { replace: true });
+        navigate('/dashboard', { replace: true });
         }, 1500);
       } catch (e) {
         setStatus('error');

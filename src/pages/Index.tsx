@@ -114,7 +114,7 @@ const Index = () => {
               <div className="relative group">
                 <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl blur opacity-25 group-hover:opacity-40 transition duration-300"></div>
                 <div className="relative">
-                  <CommandLine commands={demoCommands} autoStart={true} />
+              <CommandLine commands={demoCommands} autoStart={true} />
                 </div>
               </div>
             </div>
@@ -147,7 +147,7 @@ const Index = () => {
                   <div key={i} className="flex items-center gap-3 group">
                     <div className="w-6 h-6 rounded-full bg-purple-500/20 border border-purple-500/30 flex items-center justify-center group-hover:bg-purple-500/30 transition-all">
                       <ChevronRight className="h-3 w-3 text-purple-400" />
-                    </div>
+                  </div>
                     <span className="text-sm font-mono text-gray-300">{feature}</span>
                   </div>
                 ))}
@@ -268,8 +268,8 @@ const Index = () => {
                 <Link to="/quick-start">
                   GET STARTED NOW
                   <ChevronRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
+              </Link>
+            </Button>
             </div>
           </div>
         </section>
