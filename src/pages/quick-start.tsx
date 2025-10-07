@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const QuickStart = () => {
   return (
-    <div className="p-8 lg:pl-72">
+    <div className="p-8">
       <div className="max-w-3xl mx-auto">
         <div className="mb-12 animate-slide-up">
           <Badge variant="purple-outline" className="mb-4">Quick Start Guide</Badge>

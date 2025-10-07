@@ -4,7 +4,7 @@ import { CodeBlock } from '@/components/ui/CodeBlock';
 
 const Customization = () => {
   return (
-    <div className="p-8 lg:pl-72">
+    <div className="p-8">
       <div className="max-w-3xl mx-auto">
         <div className="mb-12 animate-slide-up">
           <h1 className="text-4xl font-bold mb-4">Customization</h1>
