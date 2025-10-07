@@ -19,6 +19,7 @@ import Customization from "@/pages/customization";
 import FAQ from "@/pages/faq";
 import Login from "@/pages/Login";
 import Signup from "@/pages/Signup";
+import VerifyOTP from "@/pages/VerifyOTP";
 import Dashboard from "@/pages/Dashboard";
 import Trends from "@/pages/Trends";
 import AuthCallback from "@/pages/AuthCallback";
@@ -36,6 +37,7 @@ const App = () => (
             {/* Auth routes without Layout */}
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/verify-otp" element={<VerifyOTP />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
 
             {/* Protected app routes without public Layout (custom UI) */}

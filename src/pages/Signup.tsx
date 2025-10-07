@@ -28,7 +28,8 @@ const Signup = () => {
     if (error) {
       setError(error);
     } else {
-      navigate('/login', { replace: true });
+      // Redirect to OTP verification page with the email
+      navigate('/verify-otp', { state: { email }, replace: true });
     }
   };
 
