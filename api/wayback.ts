@@ -1,14 +1,14 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-const WAYBACK_CDX_URL = 'http://web.archive.org/cdx/search/cdx';
-const WAYBACK_AVAILABILITY_URL = 'http://archive.org/wayback/available';
+const WAYBACK_CDX_URL = 'https://web.archive.org/cdx/search/cdx';
+const WAYBACK_AVAILABILITY_URL = 'https://archive.org/wayback/available';
 
-// Alternative proxy services as fallbacks
+// Alternative proxy services as fallbacks (updated with working proxies)
 const PROXY_SERVICES = [
-  'https://r.jina.ai/',
-  'https://api.allorigins.win/raw?url=',
-  'https://cors-anywhere.herokuapp.com/',
-  'https://api.codetabs.com/v1/proxy?quest='
+  { url: 'https://api.allorigins.win/raw?url=', name: 'AllOrigins' },
+  { url: 'https://corsproxy.io/?', name: 'CORSProxy.io' },
+  { url: 'https://api.codetabs.com/v1/proxy?quest=', name: 'CodeTabs' },
+  { url: 'https://proxy.cors.sh/', name: 'CORS.sh' }
 ];
 
 export default async function (req: VercelRequest, res: VercelResponse) {
@@ -102,11 +102,12 @@ export default async function (req: VercelRequest, res: VercelResponse) {
       }
 
       // Try proxy services as fallbacks (limited attempts with shorter timeout)
-      for (const proxy of PROXY_SERVICES.slice(0, 2)) {
+      for (const proxy of PROXY_SERVICES) {
         try {
-          const proxyUrl = `${proxy}${encodeURIComponent(cdxUrl)}`;
+          const proxyUrl = `${proxy.url}${encodeURIComponent(cdxUrl)}`;
+          console.log(`Trying proxy: ${proxy.name}`);
           const controller = new AbortController();
-          const id = setTimeout(() => controller.abort(), 4000);
+          const id = setTimeout(() => controller.abort(), 5000);
           const proxyRes = await fetch(proxyUrl, {
             headers: {
               'User-Agent': 'FortiCore-Bot/1.0',
@@ -127,30 +128,36 @@ export default async function (req: VercelRequest, res: VercelResponse) {
                 try {
                   proxyJson = JSON.parse(jsonMatch[0]);
                 } catch (innerError) {
-                  console.error(`Failed to parse inner JSON from proxy ${proxy}:`, innerError);
+                  console.error(`Failed to parse inner JSON from proxy ${proxy.name}:`, innerError);
                   continue; // Try next proxy
                 }
               } else {
-                console.error(`Proxy ${proxy} response is not valid JSON:`, proxyText.substring(0, 200));
+                console.error(`Proxy ${proxy.name} response is not valid JSON:`, proxyText.substring(0, 200));
                 continue; // Try next proxy
               }
             }
 
             // Skip header row if present and extract only URLs (first column)
             const urlsOnly = proxyJson.slice(1).map((entry: string[]) => entry[0]);
+            console.log(`Success with proxy: ${proxy.name}`);
             return res.status(200).json({ urls: urlsOnly, closest: availabilityData?.archived_snapshots?.closest });
           }
-        } catch (proxyError) {
-          console.log(`Proxy ${proxy} failed:`, proxyError.message);
+        } catch (proxyError: any) {
+          console.log(`Proxy ${proxy.name} failed:`, proxyError.message);
           continue; // Try next proxy
         }
       }
 
       // All methods failed
+      console.error('All Wayback access methods exhausted for URL mode');
       return res.status(503).json({ 
-        error: 'All Wayback access methods failed. The service may be temporarily unavailable or rate-limited.',
+        error: 'Unable to retrieve Wayback data. The Wayback Machine API may be temporarily unavailable, rate-limited, or blocking requests. Try a different domain or wait a few minutes.',
         closest: availabilityData?.archived_snapshots?.closest,
-        urls: []
+        urls: [],
+        debug: {
+          cdxUrl: cdxUrl.substring(0, 100) + '...',
+          proxiesAttempted: PROXY_SERVICES.length
+        }
       });
 
     } else {
@@ -210,16 +217,18 @@ export default async function (req: VercelRequest, res: VercelResponse) {
 
           return res.status(200).json({ snapshots, closest: availabilityData?.archived_snapshots?.closest });
         }
-      } catch (directError) {
-        console.log('Direct access failed for snapshots, trying proxy services...');
+      } catch (directError: any) {
+        const isTimeout = directError.name === 'AbortError' || directError.message?.includes('aborted');
+        console.log(`Direct access failed for snapshots${isTimeout ? ' (timeout)' : ''}, trying proxy services...`);
       }
 
-      // Try proxy services as fallbacks for snapshots (limited attempts with shorter timeout)
-      for (const proxy of PROXY_SERVICES.slice(0, 2)) {
+      // Try proxy services as fallbacks for snapshots
+      for (const proxy of PROXY_SERVICES) {
         try {
-          const proxyUrl = `${proxy}${encodeURIComponent(cdxUrl)}`;
+          const proxyUrl = `${proxy.url}${encodeURIComponent(cdxUrl)}`;
+          console.log(`Trying proxy for snapshots: ${proxy.name}`);
           const controller = new AbortController();
-          const id = setTimeout(() => controller.abort(), 4000);
+          const id = setTimeout(() => controller.abort(), 5000);
           const proxyRes = await fetch(proxyUrl, {
             headers: {
               'User-Agent': 'FortiCore-Bot/1.0',
@@ -236,39 +245,45 @@ export default async function (req: VercelRequest, res: VercelResponse) {
             } catch (e) {
               const jsonMatch = proxyText.match(/\[\[.*?\]\]/s);
               if (jsonMatch && jsonMatch[0]) {
-                try {
-                  proxyJson = JSON.parse(jsonMatch[0]);
-                } catch (innerError) {
-                  console.error(`Failed to parse inner JSON from proxy ${proxy}:`, innerError);
-                  continue;
-                }
-              } else {
-                console.error(`Proxy ${proxy} response is not valid JSON:`, proxyText.substring(0, 200));
+              try {
+                proxyJson = JSON.parse(jsonMatch[0]);
+              } catch (innerError) {
+                console.error(`Failed to parse inner JSON from proxy ${proxy.name}:`, innerError);
                 continue;
               }
+            } else {
+              console.error(`Proxy ${proxy.name} response is not valid JSON:`, proxyText.substring(0, 200));
+              continue;
             }
-
-            const snapshots = proxyJson.slice(1).map((entry: string[]) => ({
-              timestamp: entry[0],
-              original: entry[1],
-              statusCode: entry[2],
-              mimetype: entry[3],
-              length: entry[4],
-              archiveUrl: `https://web.archive.org/web/${entry[0]}/${entry[1]}`
-            }));
-
-            return res.status(200).json({ snapshots, closest: availabilityData?.archived_snapshots?.closest });
           }
-        } catch (proxyError) {
-          console.log(`Proxy ${proxy} failed for snapshots:`, proxyError.message);
-          continue;
-        }
-      }
 
+          const snapshots = proxyJson.slice(1).map((entry: string[]) => ({
+            timestamp: entry[0],
+            original: entry[1],
+            statusCode: entry[2],
+            mimetype: entry[3],
+            length: entry[4],
+            archiveUrl: `https://web.archive.org/web/${entry[0]}/${entry[1]}`
+          }));
+
+          console.log(`Success with proxy for snapshots: ${proxy.name}`);
+          return res.status(200).json({ snapshots, closest: availabilityData?.archived_snapshots?.closest });
+        }
+      } catch (proxyError: any) {
+        console.log(`Proxy ${proxy.name} failed for snapshots:`, proxyError.message);
+        continue;
+      }
+    }
+
+      console.error('All Wayback access methods exhausted for snapshots mode');
       return res.status(503).json({ 
-        error: 'All Wayback access methods failed. The service may be temporarily unavailable or rate-limited.',
+        error: 'Unable to retrieve Wayback snapshots. The Wayback Machine API may be temporarily unavailable, rate-limited, or blocking requests. Try a different domain or wait a few minutes.',
         closest: availabilityData?.archived_snapshots?.closest,
-        snapshots: []
+        snapshots: [],
+        debug: {
+          cdxUrl: cdxUrl.substring(0, 100) + '...',
+          proxiesAttempted: PROXY_SERVICES.length
+        }
       });
     }
   } catch (error: any) {
