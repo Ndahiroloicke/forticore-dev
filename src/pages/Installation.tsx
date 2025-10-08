@@ -170,43 +170,50 @@ sudo chmod +x /usr/local/bin/fortc`}
 
       {selectedPlatform === "docker" && (
         <div className="animate-fade-in">
-          <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">Docker Installation (Coming Soon)</h2>
+          <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">Option 1: Docker (Recommended)</h2>
 
-          <h3 className="text-base sm:text-lg font-medium mb-1 sm:mb-2">1. Install Docker</h3>
-          <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">
-            Ensure Docker is installed on your system. Visit the{" "}
-            <a
-              href="https://docs.docker.com/get-docker/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary hover:underline"
-            >
-              Docker website
-            </a>{" "}
-            for installation instructions.
+          <p className="text-xs sm:text-sm text-muted-foreground mb-4 sm:mb-6">
+            The easiest way to run FortiCore is using Docker:
           </p>
 
-          <h3 className="text-base sm:text-lg font-medium mb-1 sm:mb-2 mt-4 sm:mt-6">2. Pull the FortiCore Image</h3>
-          <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">Pull the FortiCore Docker image:</p>
-
-          <div className="w-full">
-            <CodeBlock code="docker pull forticore/fortc:latest" caption="Pull Docker image" />
-          </div>
-
-          <h3 className="text-base sm:text-lg font-medium mb-1 sm:mb-2 mt-4 sm:mt-6">3. Run FortiCore Container</h3>
-          <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">Start a FortiCore container:</p>
-
-          <div className="w-full">
-            <CodeBlock code="docker run -it --name fortc forticore/fortc:latest" caption="Run container" />
-          </div>
-
-          <h3 className="text-base sm:text-lg font-medium mb-1 sm:mb-2 mt-4 sm:mt-6">4. Verify Installation</h3>
+          <h3 className="text-base sm:text-lg font-medium mb-1 sm:mb-2">Build the Docker Image</h3>
           <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">
-            Verify that FortiCore is correctly installed:
+            First, clone the repository and build the Docker image:
           </p>
 
           <div className="w-full">
-            <CodeBlock code="docker exec -it fortc fortc --version" caption="Check version" />
+            <CodeBlock code="docker build -t forticore:latest ." caption="Build the Docker image" />
+          </div>
+
+          <h3 className="text-base sm:text-lg font-medium mb-1 sm:mb-2 mt-4 sm:mt-6">Or Use the Helper Script</h3>
+          <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">
+            Alternatively, use the provided helper script for easier management:
+          </p>
+
+          <div className="w-full">
+            <CodeBlock
+              code={`chmod +x docker-run.sh
+./docker-run.sh build`}
+              caption="Using the helper script"
+            />
+          </div>
+
+          <h3 className="text-base sm:text-lg font-medium mb-1 sm:mb-2 mt-4 sm:mt-6">Run a Scan</h3>
+          <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">
+            Execute a scan using the helper script:
+          </p>
+
+          <div className="w-full">
+            <CodeBlock code="./docker-run.sh scan -t example.com -s web -v" caption="Run a scan" />
+          </div>
+
+          <h3 className="text-base sm:text-lg font-medium mb-1 sm:mb-2 mt-4 sm:mt-6">Or Use Docker Compose</h3>
+          <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">
+            Run FortiCore using docker-compose:
+          </p>
+
+          <div className="w-full">
+            <CodeBlock code="docker-compose run forticore scan -t example.com -s web" caption="Using docker-compose" />
           </div>
 
           <div className="bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-900 rounded-lg p-3 sm:p-4 flex items-start mt-6 sm:mt-8">
@@ -216,11 +223,11 @@ sudo chmod +x /usr/local/bin/fortc`}
                 Installation Complete
               </h3>
               <p className="text-xs sm:text-sm text-green-700 dark:text-green-400 mt-1">
-                FortiCore is now available in a Docker container. Continue to the{" "}
+                FortiCore is now running in Docker. Continue to the{" "}
                 <Link to="/quick-start" className="underline">
                   Quick Start Guide
                 </Link>{" "}
-                to begin your first scan.
+                to learn more about advanced usage.
               </p>
             </div>
           </div>

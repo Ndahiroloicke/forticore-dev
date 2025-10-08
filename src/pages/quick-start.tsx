@@ -140,59 +140,64 @@ sudo chmod +x /usr/local/bin/fortc`}
           <TabsContent value="docker" className="border-none p-0 animate-slide-up">
             <Card className="bg-white dark:bg-dark-300 border border-purple-100 dark:border-purple-900/30">
               <CardHeader>
-                <CardTitle>Docker Installation</CardTitle>
-                <CardDescription>Run FortiCore in a Docker container for cross-platform support</CardDescription>
+                <CardTitle>Docker Installation (Recommended)</CardTitle>
+                <CardDescription>The easiest way to run FortiCore is using Docker</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div>
                   <h3 className="text-lg font-medium mb-2 flex items-center gap-2">
                     <Badge variant="purple" className="rounded-full h-6 w-6 p-0 flex items-center justify-center">1</Badge>
-                    Install Docker
+                    Build the Docker Image
                   </h3>
                   <p className="text-muted-foreground mb-4">
-                    Ensure Docker is installed on your system. Visit the <a href="https://docs.docker.com/get-docker/" target="_blank" rel="noopener noreferrer" className="text-purple-600 dark:text-purple-400 hover:underline">Docker website</a> for installation instructions.
+                    First, clone the repository and build the Docker image:
                   </p>
+                  <CodeBlock
+                    code="docker build -t forticore:latest ."
+                    caption="Build the Docker image"
+                  />
                 </div>
                 
                 <div>
                   <h3 className="text-lg font-medium mb-2 flex items-center gap-2">
                     <Badge variant="purple" className="rounded-full h-6 w-6 p-0 flex items-center justify-center">2</Badge>
-                    Pull the FortiCore Image
+                    Or Use the Helper Script
                   </h3>
                   <p className="text-muted-foreground mb-4">
-                    Pull the FortiCore Docker image:
+                    Alternatively, use the provided helper script for easier management:
                   </p>
                   <CodeBlock
-                    code="docker pull forticore/forticore:latest"
-                    caption="Pull FortiCore Docker image"
+                    code={`chmod +x docker-run.sh
+./docker-run.sh build`}
+                    caption="Using the helper script"
                   />
                 </div>
                 
                 <div>
                   <h3 className="text-lg font-medium mb-2 flex items-center gap-2">
                     <Badge variant="purple" className="rounded-full h-6 w-6 p-0 flex items-center justify-center">3</Badge>
-                    Run FortiCore Container
+                    Run a Scan
                   </h3>
                   <p className="text-muted-foreground mb-4">
-                    Start a FortiCore container:
+                    Execute a scan using the helper script:
                   </p>
                   <CodeBlock
-                    code="docker run -it --name forticore forticore/forticore:latest"
-                    caption="Run container"
+                    code="./docker-run.sh scan -t example.com -s web -v"
+                    caption="Run a scan"
                   />
                 </div>
                 
                 <div>
                   <h3 className="text-lg font-medium mb-2 flex items-center gap-2">
                     <Badge variant="purple" className="rounded-full h-6 w-6 p-0 flex items-center justify-center">4</Badge>
-                    Verify Installation
+                    Or Use Docker Compose
                   </h3>
                   <p className="text-muted-foreground mb-4">
-                    Verify that FortiCore is correctly installed:
+                    Run FortiCore using docker-compose:
                   </p>
                   <CodeBlock
-                    code="docker exec -it fortc fortc --version"
-                    caption="Check version"
+                    code="docker-compose run forticore scan -t example.com -s web"
+                    caption="Using docker-compose"
                   />
                 </div>
               </CardContent>
