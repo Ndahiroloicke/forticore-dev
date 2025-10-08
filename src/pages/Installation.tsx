@@ -7,7 +7,7 @@ import { ChevronRight, AlertTriangle, CheckCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const Installation = () => {
-  const [selectedPlatform, setSelectedPlatform] = useState<"linux" | "docker">("linux")
+  const [selectedPlatform, setSelectedPlatform] = useState<"linux" | "docker" | "debian">("linux")
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 lg:pl-72 max-w-full">
@@ -51,6 +51,18 @@ const Installation = () => {
           <button
             className={cn(
               "px-3 sm:px-4 py-2 rounded-md border text-xs sm:text-sm font-medium transition-all w-full sm:w-auto",
+              selectedPlatform === "debian"
+                ? "bg-primary text-primary-foreground border-primary"
+                : "bg-background border-border hover:bg-accent",
+            )}
+            onClick={() => setSelectedPlatform("debian")}
+          >
+            Debian/Ubuntu
+          </button>
+
+          <button
+            className={cn(
+              "px-3 sm:px-4 py-2 rounded-md border text-xs sm:text-sm font-medium transition-all w-full sm:w-auto",
               selectedPlatform === "linux"
                 ? "bg-primary text-primary-foreground border-primary"
                 : "bg-background border-border hover:bg-accent",
@@ -73,6 +85,77 @@ const Installation = () => {
           </button>
         </div>
       </div>
+
+      {selectedPlatform === "debian" && (
+        <div className="animate-fade-in">
+          <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">Debian/Ubuntu Installation</h2>
+
+          <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">
+            The easiest way to install FortiCore on Debian/Ubuntu is using the pre-built .deb package:
+          </p>
+
+          <h3 className="text-base sm:text-lg font-medium mb-1 sm:mb-2">1. Download the Package</h3>
+          <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">
+            Download the latest .deb package from GitHub releases:
+          </p>
+
+          <div className="w-full">
+            <CodeBlock
+              code="wget https://github.com/FORTI-CORE/fortc/releases/download/v0.1.0/forticore_0.1.0-1_amd64.deb"
+              caption="Download FortiCore .deb package"
+            />
+          </div>
+
+          <h3 className="text-base sm:text-lg font-medium mb-1 sm:mb-2 mt-4 sm:mt-6">2. Install the Package</h3>
+          <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">
+            Install the downloaded package using dpkg:
+          </p>
+
+          <div className="w-full">
+            <CodeBlock
+              code="sudo dpkg -i forticore_0.1.0-1_amd64.deb"
+              caption="Install the package"
+            />
+          </div>
+
+          <h3 className="text-base sm:text-lg font-medium mb-1 sm:mb-2 mt-4 sm:mt-6">3. Fix Dependencies (if needed)</h3>
+          <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">
+            If there are missing dependencies, run:
+          </p>
+
+          <div className="w-full">
+            <CodeBlock
+              code="sudo apt-get install -f"
+              caption="Fix dependencies"
+            />
+          </div>
+
+          <h3 className="text-base sm:text-lg font-medium mb-1 sm:mb-2 mt-4 sm:mt-6">4. Verify Installation</h3>
+          <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">
+            Verify that FortiCore is correctly installed:
+          </p>
+
+          <div className="w-full">
+            <CodeBlock code="fortc --version" caption="Verify installation" />
+          </div>
+
+          <div className="bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-900 rounded-lg p-3 sm:p-4 flex items-start mt-6 sm:mt-8">
+            <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-500 shrink-0 mt-0.5 mr-2 sm:mr-3" />
+            <div>
+              <h3 className="font-medium text-sm sm:text-base text-green-800 dark:text-green-300">
+                Installation Complete
+              </h3>
+              <p className="text-xs sm:text-sm text-green-700 dark:text-green-400 mt-1">
+                FortiCore is now installed on your system. Continue to the{" "}
+                <Link to="/quick-start" className="underline">
+                  Quick Start Guide
+                </Link>{" "}
+                to begin your first scan.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {selectedPlatform === "linux" && (
         <div className="animate-fade-in">

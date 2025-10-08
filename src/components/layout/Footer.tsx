@@ -117,15 +117,6 @@ export const Footer = () => {
                       <ArrowUpRight className="h-3 w-3 ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </Link>
               </li>
-              <li>
-                    <Link 
-                      to="/integration" 
-                      className="group inline-flex items-center text-sm text-muted-foreground hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
-                    >
-                  Integration
-                      <ArrowUpRight className="h-3 w-3 ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </Link>
-              </li>
             </ul>
           </div>
           

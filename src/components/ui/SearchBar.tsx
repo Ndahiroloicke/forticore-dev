@@ -10,8 +10,6 @@ const mockResults = [
   { title: 'Quick Start Tutorial', path: '/quick-start', category: 'Getting Started' },
   { title: 'Vulnerability Scanning', path: '/features', category: 'Features' },
   { title: 'Configuration Options', path: '/configuration', category: 'User Guide' },
-  { title: 'Integration with Other Tools', path: '/integration', category: 'Advanced Topics' },
-  { title: 'Custom Scripts', path: '/customization', category: 'Advanced Topics' },
   { title: 'Common Questions', path: '/faq', category: 'FAQ' },
 ];
 

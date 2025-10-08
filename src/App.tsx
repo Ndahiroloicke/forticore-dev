@@ -14,8 +14,6 @@ import NotFound from "@/pages/NotFound";
 import QuickStart from "@/pages/quick-start";
 import Features from "@/pages/features";
 import Configuration from "@/pages/configuration";
-import Integration from "@/pages/integration";
-import Customization from "@/pages/customization";
 import FAQ from "@/pages/faq";
 import Login from "@/pages/Login";
 import Signup from "@/pages/Signup";
@@ -53,8 +51,6 @@ const App = () => (
               <Route path="/quick-start" element={<QuickStart />} />
               <Route path="/features" element={<Features />} />
               <Route path="/configuration" element={<Configuration />} />
-              <Route path="/integration" element={<Integration />} />
-              <Route path="/customization" element={<Customization />} />
               <Route path="/faq" element={<FAQ />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />

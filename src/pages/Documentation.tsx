@@ -1,6 +1,6 @@
 
 import { Link } from 'react-router-dom';
-import { ChevronRight, FileText, Terminal, Shield, Settings, ExternalLink, Code } from 'lucide-react';
+import { ChevronRight, FileText, Terminal, Shield, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface DocCardProps {
@@ -89,28 +89,6 @@ const Documentation = () => {
       </section>
       
       <section className="mb-12">
-        <h2 className="text-2xl font-bold mb-6">Advanced Topics</h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <DocCard
-            icon={ExternalLink}
-            title="Integration"
-            description="Guidelines for integrating FortiCore with third-party tools like SIEM systems."
-            to="/integration"
-            delay={0.5}
-          />
-          
-          <DocCard
-            icon={Code}
-            title="Customization"
-            description="Extend FortiCore's capabilities through plugins or custom scripts."
-            to="/customization"
-            delay={0.6}
-          />
-        </div>
-      </section>
-      
-      <section className="mb-12">
         <h2 className="text-2xl font-bold mb-6">Reference</h2>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -119,7 +97,7 @@ const Documentation = () => {
             title="FAQ"
             description="Answers to frequently asked questions about FortiCore usage and troubleshooting."
             to="/faq"
-            delay={0.7}
+            delay={0.5}
           />
         </div>
       </section>

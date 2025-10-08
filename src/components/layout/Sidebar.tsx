@@ -75,7 +75,6 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     'getting-started': true,
     'user-guide': false,
-    'advanced-topics': false,
   });
   
   const toggleSection = (section: string) => {
@@ -166,29 +165,6 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                 icon={Settings} 
                 label="Configuration" 
                 isActive={checkIsActive('/configuration')} 
-              />
-            </NavItem>
-            
-            <NavItem 
-              to="#" 
-              icon={BookOpen} 
-              label="Advanced Topics" 
-              isActive={false}
-              hasSubmenu={true}
-              isSubmenuOpen={openSections['advanced-topics']}
-              onClick={() => toggleSection('advanced-topics')}
-            >
-              <NavItem 
-                to="/integration" 
-                icon={ExternalLink} 
-                label="Integration" 
-                isActive={checkIsActive('/integration')} 
-              />
-              <NavItem 
-                to="/customization" 
-                icon={Code} 
-                label="Customization" 
-                isActive={checkIsActive('/customization')} 
               />
             </NavItem>
             
