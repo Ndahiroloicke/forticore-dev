@@ -79,13 +79,16 @@ If timeouts persist:
 ## Other API Routes
 
 The timeout configuration applies to all API routes:
-- `/api/wayback` - Wayback Machine snapshots
+- `/api/wayback` - Wayback Machine snapshots (optimized with proxies)
 - `/api/subdomains` - Subdomain enumeration
 - `/api/headers` - Security headers analysis
 - `/api/dns` - DNS lookups
 - `/api/tech` - Technology fingerprinting
 - `/api/robots` - Robots.txt parsing
-- `/api/tls` - TLS/SSL analysis
+- `/api/tls` - TLS/SSL analysis (cache-first, see TLS_API_GUIDE.md)
 - `/api/content` - Content discovery
 
-All routes are optimized to complete within the timeout limits.
+**Special Notes:**
+- **Wayback API**: Uses multiple proxy fallbacks (see WAYBACK_API_GUIDE.md)
+- **TLS API**: Uses cache-first strategy, returns PENDING for first-time scans
+- All routes are optimized to complete within the timeout limits

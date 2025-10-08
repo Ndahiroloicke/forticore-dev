@@ -29,7 +29,10 @@ export async function fetchRobots(url: string) {
 export async function fetchTlsGrade(host: string) {
   const res = await fetch(`/api/tls?host=${encodeURIComponent(host)}`, { cache: 'no-store' });
   const json = await res.json();
-  if (!res.ok) throw new Error(json.error || 'TLS check failed');
+  // Don't throw error for PENDING status (200 response with pending status)
+  if (!res.ok && json.status !== 'PENDING') {
+    throw new Error(json.message || json.error || 'TLS check failed');
+  }
   return json;
 }
 
