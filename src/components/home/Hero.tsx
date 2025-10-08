@@ -32,7 +32,7 @@ export const Hero = () => {
         <div className="flex flex-wrap gap-4 justify-center">
           <Button asChild size="lg" className="h-12 px-6 bg-purple-600 hover:bg-purple-700 shadow-md hover:shadow-lg">
             <Link to="/installation">
-              Get Started
+              Terminal Tryout
               <ChevronRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>

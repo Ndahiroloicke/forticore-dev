@@ -63,8 +63,9 @@ const QuickStart = () => {
                     First, ensure you have the necessary dependencies installed:
                   </p>
                   <CodeBlock
-                    code="sudo apt update && sudo apt install -y python3 python3-pip git"
-                    caption="Install dependencies"
+                    code={`sudo apt-get update
+sudo apt-get install -y build-essential pkg-config libssl-dev`}
+                    caption="Install dependencies (Debian/Ubuntu)"
                   />
                 </div>
                 
@@ -85,30 +86,31 @@ const QuickStart = () => {
                 <div>
                   <h3 className="text-lg font-medium mb-2 flex items-center gap-2">
                     <Badge variant="purple" className="rounded-full h-6 w-6 p-0 flex items-center justify-center">3</Badge>
-                    Set Up Virtual Environment
+                    Run Installation Script
                   </h3>
                   <p className="text-muted-foreground mb-4">
-                    It's recommended to use a virtual environment for FortiCore:
+                    Run as root in the fortc directory:
                   </p>
                   <CodeBlock
-                    code={`cd forticore
-python3 -m venv venv
-source venv/bin/activate`}
-                    caption="Create and activate virtual environment"
+                    code={`cd FortiCore
+source "/root/.cargo/env" && bash install.sh`}
+                    caption="Automatic installation"
                   />
                 </div>
                 
                 <div>
                   <h3 className="text-lg font-medium mb-2 flex items-center gap-2">
                     <Badge variant="purple" className="rounded-full h-6 w-6 p-0 flex items-center justify-center">4</Badge>
-                    Install FortiCore
+                    Manual Build (Alternative)
                   </h3>
                   <p className="text-muted-foreground mb-4">
-                    Install FortiCore and its dependencies:
+                    Or build and install manually with Cargo:
                   </p>
                   <CodeBlock
-                    code="pip install -e ."
-                    caption="Install FortiCore"
+                    code={`cargo build --release
+sudo cp target/release/fortc /usr/local/bin/
+sudo chmod +x /usr/local/bin/fortc`}
+                    caption="Manual installation"
                   />
                 </div>
                 
@@ -121,7 +123,7 @@ source venv/bin/activate`}
                     Verify that FortiCore is correctly installed:
                   </p>
                   <CodeBlock
-                    code="ftcore version"
+                    code="fortc --version"
                     caption="Check FortiCore version"
                   />
                 </div>
@@ -189,7 +191,7 @@ source venv/bin/activate`}
                     Verify that FortiCore is correctly installed:
                   </p>
                   <CodeBlock
-                    code="docker exec -it forticore forticore --version"
+                    code="docker exec -it fortc fortc --version"
                     caption="Check version"
                   />
                 </div>
@@ -217,7 +219,7 @@ source venv/bin/activate`}
                 Ensure FortiCore is correctly installed by checking the version:
               </p>
               <CodeBlock
-                code="ftcore version"
+                code="fortc --version"
                 caption="Check FortiCore version"
               />
             </div>
@@ -228,19 +230,23 @@ source venv/bin/activate`}
                 For a quick vulnerability scan of a target:
               </p>
               <CodeBlock
-                code="ftcore scan <target>"
+                code="fortc scan -t example.com"
                 caption="Basic comprehensive scan"
               />
             </div>
             
             <div>
-              <h3 className="text-lg font-medium mb-2">3. View Results</h3>
+              <h3 className="text-lg font-medium mb-2">3. Generate Reports</h3>
               <p className="text-muted-foreground mb-4">
-                After the scan completes, FortiCore will display a summary of findings. For a detailed report:
+                After the scan completes, generate a detailed report:
               </p>
               <CodeBlock
-                code="ftcore report --latest"
-                caption="View detailed report"
+                code={`# Generate a PDF report
+fortc report -i scan-results.json -o security-report.pdf
+
+# Or generate a text report
+fortc report -i scan-results.json -o security-report.txt`}
+                caption="Generate reports"
               />
             </div>
           </div>
@@ -259,11 +265,11 @@ source venv/bin/activate`}
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground mb-4 text-sm">
-                  Scan a web application for common vulnerabilities like XSS and SQL injection:
+                  Scan a web application for vulnerabilities like XSS and SQL injection:
                 </p>
                 <CodeBlock
-                  code="ftcore -dt <target>"
-                  caption="Web technology and vulnerability scan"
+                  code="fortc scan -t https://example.com -s web -v"
+                  caption="Web application scan with verbose output"
                 />
               </CardContent>
             </Card>
@@ -277,8 +283,8 @@ source venv/bin/activate`}
                   Perform a network vulnerability scan:
                 </p>
                 <CodeBlock
-                  code="ftcore portscan <target> comprehensive"
-                  caption="Comprehensive network scan"
+                  code="fortc scan -t 192.168.1.1 -s network -o scan-results.json"
+                  caption="Network scan with output file"
                 />
               </CardContent>
             </Card>
@@ -291,26 +297,26 @@ source venv/bin/activate`}
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground mb-4 text-sm">
-                  Check for SSL/TLS vulnerabilities:
+                  Analyze SSL/TLS configuration and detect vulnerabilities:
                 </p>
                 <CodeBlock
-                  code="ftcore scan <target> --type ssl"
-                  caption="SSL/TLS security analysis"
+                  code="fortc scan -t example.com -s ssl -v"
+                  caption="SSL/TLS configuration analysis"
                 />
               </CardContent>
             </Card>
             
             <Card className="bg-white dark:bg-dark-300 border border-purple-100 dark:border-purple-900/30 h-full">
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Port Scanning</CardTitle>
+                <CardTitle className="text-lg">Full Port Scan</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground mb-4 text-sm">
-                  Scan for open ports on a target:
+                  Comprehensive port scan of a target:
                 </p>
                 <CodeBlock
-                  code="ftcore portscan <target> quick"
-                  caption="Quick port scan"
+                  code="fortc scan -t example.com -s full -o scan-results.json"
+                  caption="Full comprehensive port scan"
                 />
               </CardContent>
             </Card>
@@ -330,45 +336,45 @@ source venv/bin/activate`}
           <div className="space-y-4 mb-6">
             <Card className="bg-white dark:bg-dark-300 border border-purple-100 dark:border-purple-900/30">
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Scan Intensity</CardTitle>
+                <CardTitle className="text-lg">Subdomain Discovery</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground mb-4 text-sm">
-                  Adjust the scan intensity (affects speed and thoroughness):
+                  Scan with subdomain enumeration:
                 </p>
                 <CodeBlock
-                  code="ftcore scan <target> comprehensive"
-                  caption="High intensity comprehensive scan"
+                  code="fortc scan -t example.com -s web --scan-subdomains"
+                  caption="Web scan with subdomain discovery"
                 />
               </CardContent>
             </Card>
             
             <Card className="bg-white dark:bg-dark-300 border border-purple-100 dark:border-purple-900/30">
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Custom Port Range</CardTitle>
+                <CardTitle className="text-lg">Vulnerability Scan</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground mb-4 text-sm">
-                  Specify a custom port range to scan:
+                  IP-based vulnerability scanning:
                 </p>
                 <CodeBlock
-                  code="ftcore portscan <target> [scan_type] [report_format]"
-                  caption="Configurable port scan"
+                  code="fortc scan -t 192.168.1.100 -s vuln -v"
+                  caption="Vulnerability scan for IP targets"
                 />
               </CardContent>
             </Card>
             
             <Card className="bg-white dark:bg-dark-300 border border-purple-100 dark:border-purple-900/30">
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Output Format</CardTitle>
+                <CardTitle className="text-lg">Exploitation Mode</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground mb-4 text-sm">
-                  Specify the output format for reports:
+                  Safely exploit discovered vulnerabilities:
                 </p>
                 <CodeBlock
-                  code="ftcore portscan <target> comprehensive json"
-                  caption="Port scan with JSON output"
+                  code="fortc exploit -t example.com --safe-mode true"
+                  caption="Safe exploitation mode"
                 />
               </CardContent>
             </Card>

@@ -7,7 +7,7 @@ const Customization = () => {
     <div className="p-8">
       <div className="max-w-3xl mx-auto">
         <div className="mb-12 animate-slide-up">
-          <h1 className="text-4xl font-bold mb-4">Customization</h1>
+          <h1 className="text-4xl font-bold mb-4">Customization (Coming Soon)</h1>
           <p className="text-xl text-muted-foreground mb-6">
             Extend FortiCore's capabilities with plugins, custom scripts, and more.
           </p>
@@ -321,7 +321,7 @@ if __name__ == "__main__":
               className="glass-card p-4 hover:shadow-md transition-all duration-200 flex items-center"
             >
               <Puzzle className="h-5 w-5 mr-2 text-primary" />
-              <span>Integration Guide</span>
+              <span>Integration Guide (Coming Soon)</span>
             </Link>
             
             <a 

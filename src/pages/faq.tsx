@@ -88,7 +88,7 @@ const FAQ = () => {
             question="Which platforms does FortiCore support?" 
             answer={
               <p>
-                FortiCore currently primarily supports Linux systems, as it's the most standard platform for penetration testing. However, you can use FortiCore on other platforms through Docker. Windows and macOS native support is planned for future releases.
+                FortiCore requires Rust and Cargo (1.70.0 or newer), OpenSSL development libraries, and a Linux-based system (Ubuntu/Debian/CentOS/RHEL). Docker support is available for cross-platform usage. Windows and macOS native support is planned for future releases.
               </p>
             } 
           />
@@ -112,11 +112,13 @@ const FAQ = () => {
             question="How do I update FortiCore to the latest version?" 
             answer={
               <div>
-                <p className="mb-2">To update FortiCore to the latest version, use the built-in update command:</p>
+                <p className="mb-2">To update FortiCore to the latest version, pull the latest code and rebuild:</p>
                 <pre className="bg-primary/5 p-3 rounded-md overflow-x-auto">
-                  <code>forticore update</code>
+                  <code>{`cd FortiCore
+git pull origin main
+cargo build --release
+sudo cp target/release/fortc /usr/local/bin/`}</code>
                 </pre>
-                <p className="mt-2">You can also enable automatic updates in the configuration file by setting <code className="bg-primary/10 px-1.5 py-0.5 rounded text-primary">auto_update: true</code> in the general section.</p>
               </div>
             } 
           />
@@ -125,28 +127,29 @@ const FAQ = () => {
             question="Where are scan results stored?" 
             answer={
               <p>
-                By default, FortiCore stores scan results in the <code className="bg-primary/10 px-1.5 py-0.5 rounded text-primary">~/forticore-reports</code> directory. You can customize this location by modifying the <code className="bg-primary/10 px-1.5 py-0.5 rounded text-primary">output_dir</code> setting in your configuration file or using the <code className="bg-primary/10 px-1.5 py-0.5 rounded text-primary">--output-dir</code> command-line argument.
+                By default, FortiCore stores scan results in the <code className="bg-primary/10 px-1.5 py-0.5 rounded text-primary">./scans</code> directory in the current working directory. If not writable, it falls back to <code className="bg-primary/10 px-1.5 py-0.5 rounded text-primary">~/.forticore/scans/</code> or <code className="bg-primary/10 px-1.5 py-0.5 rounded text-primary">/var/lib/forticore/scans/</code>. Filename format: <code className="bg-primary/10 px-1.5 py-0.5 rounded text-primary">target_scantype_timestamp.json</code>
               </p>
             } 
           />
           
           <FaqItem 
-            question="How do I configure FortiCore to use a proxy?" 
+            question="How do I run different types of scans?" 
             answer={
               <div>
-                <p className="mb-2">You can configure FortiCore to use a proxy in several ways:</p>
-                <ol className="list-decimal list-inside space-y-2 ml-4">
-                  <li>Using an environment variable: <code className="bg-primary/10 px-1.5 py-0.5 rounded text-primary">export FORTICORE_PROXY="http://proxy.example.com:8080"</code></li>
-                  <li>In the configuration file:
-                    <pre className="bg-primary/5 p-3 rounded-md overflow-x-auto mt-2">
-                      <code>
-                        network:<br />
-                        &nbsp;&nbsp;proxy: "http://proxy.example.com:8080"
-                      </code>
-                    </pre>
-                  </li>
-                  <li>Via command-line argument: <code className="bg-primary/10 px-1.5 py-0.5 rounded text-primary">--proxy http://proxy.example.com:8080</code></li>
-                </ol>
+                <p className="mb-2">FortiCore supports multiple scan types:</p>
+                <pre className="bg-primary/5 p-3 rounded-md overflow-x-auto">
+                  <code>{`# Web Application Scan
+fortc scan -t https://example.com -s web -v
+
+# Network Scan
+fortc scan -t 192.168.1.1 -s network -o results.json
+
+# SSL/TLS Analysis
+fortc scan -t example.com -s ssl -v
+
+# Full Port Scan
+fortc scan -t example.com -s full -o results.json`}</code>
+                </pre>
               </div>
             } 
           />
@@ -190,9 +193,9 @@ const FAQ = () => {
               <div>
                 <p className="mb-2">Yes, FortiCore supports various authentication methods:</p>
                 <ul className="list-disc list-inside space-y-2 ml-4">
-                  <li>Basic authentication: <code className="bg-primary/10 px-1.5 py-0.5 rounded text-primary">ftcore scan &lt;target&gt; --auth basic --username user --password pass</code></li>
-                  <li>Token-based authentication: <code className="bg-primary/10 px-1.5 py-0.5 rounded text-primary">ftcore scan &lt;target&gt; --auth bearer --token &lt;token&gt;</code></li>
-                  <li>Cookie-based authentication: <code className="bg-primary/10 px-1.5 py-0.5 rounded text-primary">ftcore scan &lt;target&gt; --auth cookie --cookie "session=abc123"</code></li>
+                  <li>Basic authentication: <code className="bg-primary/10 px-1.5 py-0.5 rounded text-primary">fortc scan -t &lt;target&gt; --auth basic --username user --password pass</code></li>
+                  <li>Token-based authentication: <code className="bg-primary/10 px-1.5 py-0.5 rounded text-primary">fortc scan -t &lt;target&gt; --auth bearer --token &lt;token&gt;</code></li>
+                  <li>Cookie-based authentication: <code className="bg-primary/10 px-1.5 py-0.5 rounded text-primary">fortc scan -t &lt;target&gt; --auth cookie --cookie "session=abc123"</code></li>
                 </ul>
               </div>
             } 
@@ -220,7 +223,7 @@ const FAQ = () => {
                 <p className="mb-2">If FortiCore crashes during scanning, try these troubleshooting steps:</p>
                 <ol className="list-decimal list-inside space-y-2 ml-4">
                   <li>Update to the latest version of FortiCore</li>
-                  <li>Run with increased logging: <code className="bg-primary/10 px-1.5 py-0.5 rounded text-primary">forticore scan --target example.com --log-level debug</code></li>
+                  <li>Run with increased logging: <code className="bg-primary/10 px-1.5 py-0.5 rounded text-primary">fortc scan -t example.com --log-level debug</code></li>
                   <li>Check system resources (memory, CPU) during the scan</li>
                   <li>Try reducing scan intensity: <code className="bg-primary/10 px-1.5 py-0.5 rounded text-primary">--intensity low</code></li>
                   <li>Scan specific modules instead of running comprehensive scans</li>

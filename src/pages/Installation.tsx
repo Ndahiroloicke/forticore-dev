@@ -40,8 +40,7 @@ const Installation = () => {
           <div>
             <h3 className="font-medium text-sm sm:text-base">System Requirements</h3>
             <p className="text-xs sm:text-sm text-muted-foreground mt-1">
-              FortiCore currently supports Linux systems. Windows and macOS support is planned for future releases.
-              Docker support is available for cross-platform usage.
+              FortiCore requires Rust and Cargo (1.70.0 or newer), OpenSSL development libraries, and a Linux-based system (Ubuntu/Debian/CentOS/RHEL).
             </p>
           </div>
         </div>
@@ -81,13 +80,26 @@ const Installation = () => {
 
           <h3 className="text-base sm:text-lg font-medium mb-1 sm:mb-2">1. Install Dependencies</h3>
           <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">
-            First, ensure you have the necessary dependencies installed:
+            For Debian/Ubuntu:
           </p>
 
           <div className="w-full">
             <CodeBlock
-              code="sudo apt update && sudo apt install -y python3 python3-pip git"
-              caption="Install dependencies"
+              code={`sudo apt-get update
+sudo apt-get install -y build-essential pkg-config libssl-dev`}
+              caption="Install dependencies (Debian/Ubuntu)"
+            />
+          </div>
+
+          <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4 mt-4">
+            For CentOS/RHEL/Fedora:
+          </p>
+
+          <div className="w-full">
+            <CodeBlock
+              code={`sudo yum groupinstall -y "Development Tools"
+sudo yum install -y openssl-devel`}
+              caption="Install dependencies (CentOS/RHEL)"
             />
           </div>
 
@@ -101,17 +113,31 @@ const Installation = () => {
           </div>
 
           <h3 className="text-base sm:text-lg font-medium mb-1 sm:mb-2 mt-4 sm:mt-6">
-            3. Set Up Virtual Environment (Optional)
+            3. Automatic Installation
           </h3>
           <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">
-            It's recommended to use a virtual environment for FortiCore:
+            Run as root in the fortc directory:
           </p>
 
           <div className="w-full">
             <CodeBlock
-              code={`cd forticore
-sudo bash install.sh`}
-              caption="Create and activate virtual environment"
+              code={`cd FortiCore
+source "/root/.cargo/env" && bash install.sh`}
+              caption="Automatic installation"
+            />
+          </div>
+
+          <h3 className="text-base sm:text-lg font-medium mb-1 sm:mb-2 mt-4 sm:mt-6">4. Manual Installation (Alternative)</h3>
+          <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">
+            Or build and install manually:
+          </p>
+
+          <div className="w-full">
+            <CodeBlock
+              code={`cargo build --release
+sudo cp target/release/fortc /usr/local/bin/
+sudo chmod +x /usr/local/bin/fortc`}
+              caption="Manual build and installation"
             />
           </div>
 
@@ -121,7 +147,7 @@ sudo bash install.sh`}
           </p>
 
           <div className="w-full">
-            <CodeBlock code="ftcore version" caption="Verify installation" />
+            <CodeBlock code="fortc --version" caption="Verify installation" />
           </div>
 
           <div className="bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-900 rounded-lg p-3 sm:p-4 flex items-start mt-6 sm:mt-8">
@@ -144,7 +170,7 @@ sudo bash install.sh`}
 
       {selectedPlatform === "docker" && (
         <div className="animate-fade-in">
-          <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">Docker Installation (coming soon)</h2>
+          <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">Docker Installation (Coming Soon)</h2>
 
           <h3 className="text-base sm:text-lg font-medium mb-1 sm:mb-2">1. Install Docker</h3>
           <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">
@@ -164,14 +190,14 @@ sudo bash install.sh`}
           <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">Pull the FortiCore Docker image:</p>
 
           <div className="w-full">
-            <CodeBlock code="docker pull forticore/forticore:latest" caption="Pull Docker image" />
+            <CodeBlock code="docker pull forticore/fortc:latest" caption="Pull Docker image" />
           </div>
 
           <h3 className="text-base sm:text-lg font-medium mb-1 sm:mb-2 mt-4 sm:mt-6">3. Run FortiCore Container</h3>
           <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">Start a FortiCore container:</p>
 
           <div className="w-full">
-            <CodeBlock code="docker run -it --name forticore forticore/forticore:latest" caption="Run container" />
+            <CodeBlock code="docker run -it --name fortc forticore/fortc:latest" caption="Run container" />
           </div>
 
           <h3 className="text-base sm:text-lg font-medium mb-1 sm:mb-2 mt-4 sm:mt-6">4. Verify Installation</h3>
@@ -180,7 +206,7 @@ sudo bash install.sh`}
           </p>
 
           <div className="w-full">
-            <CodeBlock code="docker exec -it forticore ftcore version" caption="Check version" />
+            <CodeBlock code="docker exec -it fortc fortc --version" caption="Check version" />
           </div>
 
           <div className="bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-900 rounded-lg p-3 sm:p-4 flex items-start mt-6 sm:mt-8">

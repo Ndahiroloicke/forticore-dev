@@ -98,11 +98,9 @@ api:
             />
           </div>
 
-          <p className="text-xs sm:text-sm text-muted-foreground my-3 sm:my-4">Start the API server:</p>
-
-          <div className="w-full">
-            <CodeBlock code="ftcore api start" caption="Start API server" />
-          </div>
+          <p className="text-xs sm:text-sm text-muted-foreground my-3 sm:my-4">
+            Note: API server integration is planned for future releases. Currently, use command-line tools for automation.
+          </p>
 
           <h3 className="text-lg sm:text-xl font-medium mt-5 sm:mt-6 mb-2 sm:mb-3">API Examples</h3>
 
@@ -185,36 +183,38 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y python3 python3-pip git
+          sudo apt-get install -y build-essential pkg-config libssl-dev
+      
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
       
       - name: Install FortiCore
         run: |
           git clone https://github.com/FORTI-CORE/FortiCore.git
           cd FortiCore
-          python3 -m venv venv
-          source venv/bin/activate
-          pip install -e .
+          cargo build --release
+          sudo cp target/release/fortc /usr/local/bin/
+          sudo chmod +x /usr/local/bin/fortc
       
       - name: Run Security Scan
         run: |
-          ftcore scan \\
-            \${GITHUB_SERVER_URL}/\${GITHUB_REPOSITORY} \\
-            --output json \\
-            --report scan-results.json
+          fortc scan -t \${GITHUB_SERVER_URL}/\${GITHUB_REPOSITORY} \\
+            -s web -o scan-results.json
           
-      - name: Run Port Scan
+      - name: Generate Report
         run: |
-          ftcore portscan \\
-            \${GITHUB_SERVER_URL}/\${GITHUB_REPOSITORY} \\
-            comprehensive json
+          fortc report -i scan-results.json -o security-report.pdf
           
-      - name: Check for Critical Issues
-        run: |
-          critical_count=$(jq '.findings[] | select(.severity == "critical") | length' scan-results.json)
-          if [ "\$critical_count" -gt 0 ]; then
-            echo "Found \$critical_count critical vulnerabilities"
-            exit 1
-          fi`}
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: security-reports
+          path: |
+            scan-results.json
+            security-report.pdf`}
                 caption="GitHub Actions Workflow Example"
                 language="yaml"
               />
@@ -231,17 +231,20 @@ jobs:
 
 security-scan:
   stage: security
-  image: ubuntu:latest
+  image: rust:latest
+  before_script:
+    - apt-get update && apt-get install -y build-essential pkg-config libssl-dev git
+    - git clone https://github.com/FORTI-CORE/FortiCore.git
+    - cd FortiCore && cargo build --release
+    - cp target/release/fortc /usr/local/bin/
   script:
-    - apt-get update && apt-get install -y curl
-    - curl -sSL https://forticore.io/install.sh | bash
-    - forticore scan --target \\
-      https://$CI_PROJECT_NAME-$CI_COMMIT_REF_NAME.example.com \\
-      --output json \\
-      --output-file scan-results.json
+    - fortc scan -t https://$CI_PROJECT_NAME.example.com \\
+        -s web -o scan-results.json
+    - fortc report -i scan-results.json -o security-report.pdf
   artifacts:
     paths:
       - scan-results.json
+      - security-report.pdf
     expire_in: 1 week`}
                 caption="GitLab CI Configuration Example"
                 language="yaml"
@@ -260,11 +263,14 @@ security-scan:
           <h3 className="text-lg sm:text-xl font-medium mb-2 sm:mb-3">Splunk Integration</h3>
           <div className="w-full">
             <CodeBlock
-              code={`# Configure FortiCore to send results to Splunk
-ftcore scan --target example.com \\
-  --siem splunk \\
-  --siem-url https://splunk.example.com:8088/services/collector \\
-  --siem-token your-splunk-http-event-collector-token`}
+              code={`# Run FortiCore scan and parse results for Splunk
+fortc scan -t example.com -s web -o scan-results.json
+
+# Parse and send to Splunk HEC
+curl -X POST https://splunk.example.com:8088/services/collector \\
+  -H "Authorization: Splunk your-splunk-token" \\
+  -H "Content-Type: application/json" \\
+  -d @scan-results.json`}
               caption="Splunk integration example"
             />
           </div>
@@ -272,12 +278,14 @@ ftcore scan --target example.com \\
           <h3 className="text-lg sm:text-xl font-medium mt-5 sm:mt-6 mb-2 sm:mb-3">ELK Stack Integration</h3>
           <div className="w-full">
             <CodeBlock
-              code={`# Configure FortiCore to send results to ELK
-ftcore scan --target example.com \\
-  --siem elasticsearch \\
-  --siem-url https://elasticsearch.example.com:9200 \\
-  --siem-index forticore-findings \\
-  --siem-auth username:password`}
+              code={`# Run FortiCore scan
+fortc scan -t example.com -s web -o scan-results.json
+
+# Send to Elasticsearch
+curl -X POST https://elasticsearch.example.com:9200/forticore-findings/_doc \\
+  -u username:password \\
+  -H "Content-Type: application/json" \\
+  -d @scan-results.json`}
               caption="ELK Stack integration example"
             />
           </div>
@@ -289,12 +297,9 @@ ftcore scan --target example.com \\
           <div className="w-full">
             <CodeBlock
               code={`# Add to crontab
-0 2 * * * ftcore scan --target example.com \\
-  --siem splunk \\
-  --siem-url https://splunk.example.com:8088/services/collector \\
-  --siem-token your-splunk-http-event-collector-token \\
-  --output-file /var/log/forticore/\$(date +\\%Y-\\%m-\\%d).json`}
-              caption="Scheduled scan with SIEM integration"
+0 2 * * * fortc scan -t example.com -s web \\
+  -o /var/log/forticore/\$(date +\\%Y-\\%m-\\%d).json`}
+              caption="Scheduled scan"
             />
           </div>
         </section>
@@ -309,14 +314,18 @@ ftcore scan --target example.com \\
           <h3 className="text-lg sm:text-xl font-medium mb-2 sm:mb-3">Jira Integration</h3>
           <div className="w-full">
             <CodeBlock
-              code={`# Configure FortiCore to create Jira tickets
-ftcore scan --target example.com \\
-  --ticketing jira \\
-  --jira-url https://jira.example.com \\
-  --jira-project SEC \\
-  --jira-auth username:api-token \\
-  --jira-issue-type Bug \\
-  --jira-labels security,vulnerability`}
+              code={`# Run scan and parse results
+fortc scan -t example.com -s web -o scan-results.json
+
+# Create Jira tickets using API
+# Parse scan-results.json and create tickets for high/critical findings
+jq '.vulnerabilities[] | select(.severity=="high" or .severity=="critical")' \\
+  scan-results.json | while read vuln; do
+  curl -X POST https://jira.example.com/rest/api/2/issue \\
+    -u username:api-token \\
+    -H "Content-Type: application/json" \\
+    -d "{\"fields\": {\"project\": {\"key\": \"SEC\"}, \"summary\": \"$vuln.name\", \"description\": \"$vuln.description\", \"issuetype\": {\"name\": \"Bug\"}}}"
+done`}
               caption="Jira integration example"
             />
           </div>
@@ -324,12 +333,16 @@ ftcore scan --target example.com \\
           <h3 className="text-lg sm:text-xl font-medium mt-5 sm:mt-6 mb-2 sm:mb-3">GitHub Issues Integration</h3>
           <div className="w-full">
             <CodeBlock
-              code={`# Configure FortiCore to create GitHub issues
-ftcore scan --target example.com \\
-  --ticketing github \\
-  --github-repo owner/repository \\
-  --github-token your-github-token \\
-  --github-labels security,vulnerability`}
+              code={`# Run scan
+fortc scan -t example.com -s web -o scan-results.json
+
+# Create GitHub issues using gh CLI
+jq '.vulnerabilities[] | select(.severity=="high")' scan-results.json | while read vuln; do
+  gh issue create \\
+    --title "Security: $vuln.name" \\
+    --body "$vuln.description" \\
+    --label "security,vulnerability"
+done`}
               caption="GitHub Issues integration example"
             />
           </div>

@@ -107,7 +107,7 @@ export const Navbar = ({ toggleSidebar }: NavbarProps) => {
             className="hidden sm:flex"
           >
             <a href="/login" target="_blank" rel="noopener noreferrer">
-              Get Started
+              Terminal Tryout
             </a>
           </Button>
         </div>
