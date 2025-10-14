@@ -67,7 +67,7 @@ export const Navbar = ({ toggleSidebar }: NavbarProps) => {
             <Menu className="h-5 w-5" />
           </Button>
           
-          <Link to="/" className="flex items-center">
+          <Link to="https://forticore.vercel.app" className="flex items-center">
             <img 
               src="/forticoreLogo.png" 
               alt="FortiCore Logo" 
