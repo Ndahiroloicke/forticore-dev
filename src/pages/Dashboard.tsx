@@ -339,12 +339,54 @@ const Dashboard = () => {
       (async () => {
         try {
           const data = await fetchTlsGrade(host);
-          const json = JSON.stringify(data, null, 2);
           const executionTime = Date.now() - startTime;
+          
+          // Format the response based on status
+          let formattedContent = '';
+          if (data.status === 'READY') {
+            formattedContent = `🔒 TLS Analysis Complete for ${data.host}\n\n` +
+              `Source: ${data.source}\n` +
+              `Summary: ${data.summary}\n\n` +
+              (data.grade ? `SSL Grade: ${data.grade}\n` : '') +
+              (data.httpsSupported !== undefined ? `HTTPS Supported: ${data.httpsSupported ? '✅ Yes' : '❌ No'}\n` : '') +
+              (data.httpStatus ? `HTTP Status: ${data.httpStatus}\n` : '') +
+              (data.finalUrl ? `Final URL: ${data.finalUrl}\n` : '') +
+              (data.securityWarning ? `⚠️ Security Warning: ${data.securityWarning}\n` : '') +
+              (data.note ? `\nNote: ${data.note}\n` : '') +
+              `\nExecution Time: ${executionTime}ms\n\n` +
+              `Full Response:\n${JSON.stringify(data, null, 2)}`;
+          } else if (data.status === 'PENDING') {
+            formattedContent = `⏳ TLS Analysis in Progress for ${data.host}\n\n` +
+              `Status: ${data.message}\n` +
+              (data.statusDetails ? `Details: ${data.statusDetails}\n` : '') +
+              (data.suggestion ? `Suggestion: ${data.suggestion}\n` : '') +
+              (data.hint ? `Hint: ${data.hint}\n` : '') +
+              `\nExecution Time: ${executionTime}ms\n\n` +
+              `Full Response:\n${JSON.stringify(data, null, 2)}`;
+          } else if (data.status === 'WARNING') {
+            formattedContent = `⚠️ TLS Analysis Warning for ${data.host}\n\n` +
+              `Source: ${data.source}\n` +
+              `Summary: ${data.summary}\n` +
+              (data.securityWarning ? `Security Warning: ${data.securityWarning}\n` : '') +
+              (data.suggestion ? `Suggestion: ${data.suggestion}\n` : '') +
+              `\nExecution Time: ${executionTime}ms\n\n` +
+              `Full Response:\n${JSON.stringify(data, null, 2)}`;
+          } else if (data.status === 'ERROR') {
+            formattedContent = `❌ TLS Analysis Failed for ${data.host}\n\n` +
+              `Error: ${data.error || 'Unknown error'}\n` +
+              `Message: ${data.message}\n` +
+              (data.suggestion ? `Suggestion: ${data.suggestion}\n` : '') +
+              `\nExecution Time: ${executionTime}ms\n\n` +
+              `Full Response:\n${JSON.stringify(data, null, 2)}`;
+          } else {
+            // Fallback to raw JSON for unknown status
+            formattedContent = JSON.stringify(data, null, 2);
+          }
+          
           const reply: ChatMessage = { 
             id: `m${Date.now()}`, 
             role: 'assistant', 
-            content: json, 
+            content: formattedContent, 
             code: true,
             timestamp: Date.now(),
             executionTime
@@ -353,7 +395,11 @@ const Dashboard = () => {
           setConversations(prev => prev.map(s => s.id === activeId ? { ...s, messages: [...s.messages.filter(m=>!m.loading), reply] } : s));
           setLoading(false);
         } catch (e: any) {
-          const err: ChatMessage = { id: `m${Date.now()}`, role: 'assistant', content: `TLS error: ${e.message}` };
+          const err: ChatMessage = { 
+            id: `m${Date.now()}`, 
+            role: 'assistant', 
+            content: `❌ TLS Analysis Error for ${host}\n\nError: ${e.message}\n\nPlease try again or check if the domain is accessible.` 
+          };
           setMessages(prev => [...prev.filter(m => !m.loading), err]);
           setConversations(prev => prev.map(s => s.id === activeId ? { ...s, messages: [...s.messages.filter(m=>!m.loading), err] } : s));
           setLoading(false);
@@ -925,7 +971,7 @@ const Dashboard = () => {
                           <span className="text-[10px] font-mono text-red-600 dark:text-red-400/50 bg-red-200 dark:bg-red-500/10 px-2 py-1 rounded">SSL</span>
                         </div>
                         <h3 className="text-lg font-bold text-red-700 dark:text-red-300 mb-2">TLS Configuration</h3>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed font-mono">Assess SSL/TLS security via SSL Labs API</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed font-mono">Assess SSL/TLS security with SSL Labs API + basic fallback</p>
                       </div>
                     </div>
 
