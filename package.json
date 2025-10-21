@@ -1,8 +1,20 @@
 {
-  "name": "vite_react_shadcn_ts",
+  "name": "forticore",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "description": "FortiCore - Advanced Automated Penetration Testing & Security Assessment Tool",
+  "keywords": ["forticore", "penetration testing", "automated security testing", "cybersecurity tools", "vulnerability assessment", "subdomain enumeration", "security scanning", "pentesting automation", "CLI security tools", "network security", "web application security"],
+  "author": "FortiCore Development Team",
+  "homepage": "https://forticoredev.innov.rw",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/forticore/forticore"
+  },
+  "bugs": {
+    "url": "https://github.com/forticore/forticore/issues"
+  },
+  "license": "MIT",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

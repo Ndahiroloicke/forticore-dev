@@ -1,16 +1,59 @@
 {
-  "name": "FortiCore",
+  "name": "FortiCore - Automated Penetration Testing Tool",
   "short_name": "FortiCore",
+  "description": "Advanced automated penetration testing and security assessment tool for cybersecurity professionals",
   "icons": [
     {
       "src": "/forticoreLogo.svg",
       "sizes": "512x512",
       "type": "image/svg+xml",
       "purpose": "any maskable"
+    },
+    {
+      "src": "/forticoreLogo.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/forticoreLogo.svg",
+      "sizes": "144x144",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/forticoreLogo.svg",
+      "sizes": "96x96",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/forticoreLogo.svg",
+      "sizes": "72x72",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/forticoreLogo.svg",
+      "sizes": "48x48",
+      "type": "image/svg+xml",
+      "purpose": "any"
     }
   ],
   "start_url": "/",
   "display": "standalone",
+  "orientation": "portrait-primary",
   "background_color": "#1c1917",
-  "theme_color": "#8A53FE"
+  "theme_color": "#8A53FE",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["security", "utilities", "developer"],
+  "screenshots": [
+    {
+      "src": "/og-image.png",
+      "sizes": "1200x630",
+      "type": "image/png",
+      "form_factor": "wide"
+    }
+  ]
 } 

@@ -1,38 +1,148 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <!-- Preconnect to external domains for performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://forticoredev.innov.rw">
+    
+    <!-- Font loading optimization -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Outfit:wght@400;600;700&family=Sora:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Essential meta tags -->
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    
+    <!-- Enhanced SEO Meta Tags -->
+    <title>FortiCore - Advanced Automated Penetration Testing & Security Assessment Tool</title>
+    <meta name="description" content="FortiCore is the leading automated penetration testing platform for cybersecurity professionals. Streamline security assessments with our powerful CLI tool featuring subdomain enumeration, vulnerability scanning, and comprehensive security testing capabilities." />
+    <meta name="keywords" content="FortiCore, penetration testing, automated security testing, cybersecurity tools, vulnerability assessment, subdomain enumeration, security scanning, pentesting automation, CLI security tools, network security, web application security, security assessment platform" />
+    <meta name="author" content="FortiCore Development Team" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow" />
+    <meta name="bingbot" content="index, follow" />
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://forticoredev.innov.rw/" />
+    
+    <!-- Language and region -->
+    <meta name="language" content="English" />
+    <meta name="geo.region" content="RW" />
+    <meta name="geo.placename" content="Rwanda" />
+    
+    <!-- Theme and branding -->
+    <meta name="theme-color" content="#8A53FE" />
+    <meta name="msapplication-TileColor" content="#8A53FE" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    
+    <!-- Favicon and app icons -->
     <link rel="icon" type="image/svg+xml" href="/forticoreLogo.svg" sizes="512x512" />
-    <link rel="apple-touch-icon" sizes="512x512" href="/forticoreLogo.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/forticoreLogo.svg" />
+    <link rel="apple-touch-icon" sizes="152x152" href="/forticoreLogo.svg" />
+    <link rel="apple-touch-icon" sizes="144x144" href="/forticoreLogo.svg" />
+    <link rel="apple-touch-icon" sizes="120x120" href="/forticoreLogo.svg" />
+    <link rel="apple-touch-icon" sizes="114x114" href="/forticoreLogo.svg" />
+    <link rel="apple-touch-icon" sizes="76x76" href="/forticoreLogo.svg" />
+    <link rel="apple-touch-icon" sizes="72x72" href="/forticoreLogo.svg" />
+    <link rel="apple-touch-icon" sizes="60x60" href="/forticoreLogo.svg" />
+    <link rel="apple-touch-icon" sizes="57x57" href="/forticoreLogo.svg" />
     <link rel="icon" type="image/svg+xml" sizes="256x256" href="/forticoreLogo.svg" />
     <link rel="icon" type="image/svg+xml" sizes="192x192" href="/forticoreLogo.svg" />
+    <link rel="icon" type="image/svg+xml" sizes="32x32" href="/forticoreLogo.svg" />
+    <link rel="icon" type="image/svg+xml" sizes="16x16" href="/forticoreLogo.svg" />
     <link rel="manifest" href="/manifest.json" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FortiCore - Automated Penetration Testing Tool</title>
-    <meta name="description" content="FortiCore is an automated penetration testing tool designed to simplify security testing processes through an intuitive command-line interface." />
-    <meta name="author" content="FortiCore" />
-    <meta name="keywords" content="penetration testing, security testing, cybersecurity, automated testing, CLI tool, security assessment" />
-    <meta name="robots" content="index, follow" />
-    <meta name="theme-color" content="#8A53FE" />
     
-    <!-- Open Graph / Facebook -->
+    <!-- Enhanced Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://forticoredev.innov.rw/" />
-    <meta property="og:title" content="FortiCore - Automated Penetration Testing Tool" />
-    <meta property="og:description" content="FortiCore is an automated penetration testing tool designed to simplify security testing processes through an intuitive command-line interface." />
-    <meta property="og:image" content="/forticoreLogo.png" />
-    <meta property="og:site_name" content="FortiCore Documentation" />
+    <meta property="og:title" content="FortiCore - Advanced Automated Penetration Testing & Security Assessment Tool" />
+    <meta property="og:description" content="FortiCore is the leading automated penetration testing platform for cybersecurity professionals. Streamline security assessments with our powerful CLI tool featuring subdomain enumeration, vulnerability scanning, and comprehensive security testing capabilities." />
+    <meta property="og:image" content="https://forticoredev.innov.rw/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="FortiCore - Automated Penetration Testing Tool" />
+    <meta property="og:site_name" content="FortiCore" />
+    <meta property="og:locale" content="en_US" />
     
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://forticoredev.innov.rw/" />
-    <meta property="twitter:title" content="FortiCore - Automated Penetration Testing Tool" />
-    <meta property="twitter:description" content="FortiCore is an automated penetration testing tool designed to simplify security testing processes through an intuitive command-line interface." />
-    <meta property="twitter:image" content="/forticoreLogo.png" />
-    <meta property="twitter:creator" content="@FortiCore" />
+    <!-- Enhanced Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://forticoredev.innov.rw/" />
+    <meta name="twitter:title" content="FortiCore - Advanced Automated Penetration Testing & Security Assessment Tool" />
+    <meta name="twitter:description" content="FortiCore is the leading automated penetration testing platform for cybersecurity professionals. Streamline security assessments with our powerful CLI tool featuring subdomain enumeration, vulnerability scanning, and comprehensive security testing capabilities." />
+    <meta name="twitter:image" content="https://forticoredev.innov.rw/og-image.png" />
+    <meta name="twitter:image:alt" content="FortiCore - Automated Penetration Testing Tool" />
+    <meta name="twitter:creator" content="@FortiCore" />
+    <meta name="twitter:site" content="@FortiCore" />
+    
+    <!-- Additional SEO meta tags -->
+    <meta name="application-name" content="FortiCore" />
+    <meta name="apple-mobile-web-app-title" content="FortiCore" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    
+    <!-- Security headers -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https:;" />
+    
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "FortiCore",
+      "description": "Advanced automated penetration testing and security assessment tool for cybersecurity professionals",
+      "url": "https://forticoredev.innov.rw/",
+      "applicationCategory": "SecurityApplication",
+      "operatingSystem": "Cross-platform",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "author": {
+        "@type": "Organization",
+        "name": "FortiCore Development Team",
+        "url": "https://forticoredev.innov.rw/"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "FortiCore",
+        "url": "https://forticoredev.innov.rw/"
+      },
+      "keywords": "penetration testing, automated security testing, cybersecurity tools, vulnerability assessment, subdomain enumeration, security scanning, pentesting automation, CLI security tools, network security, web application security",
+      "featureList": [
+        "Automated penetration testing",
+        "Subdomain enumeration",
+        "Vulnerability scanning",
+        "Security assessment",
+        "CLI-based interface",
+        "Network security testing",
+        "Web application security"
+      ],
+      "screenshot": "https://forticoredev.innov.rw/og-image.png",
+      "softwareVersion": "1.0.0",
+      "datePublished": "2024-01-01",
+      "dateModified": "2024-12-19"
+    }
+    </script>
+    
+    <!-- Additional structured data for organization -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "FortiCore",
+      "url": "https://forticoredev.innov.rw/",
+      "logo": "https://forticoredev.innov.rw/forticoreLogo.svg",
+      "description": "Leading provider of automated penetration testing and security assessment tools",
+      "foundingDate": "2024",
+      "sameAs": [
+        "https://github.com/forticore",
+        "https://twitter.com/FortiCore"
+      ]
+    }
+    </script>
   </head>
 
   <body>
