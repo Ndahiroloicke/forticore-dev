@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<browserconfig>
+  <msapplication>
+    <tile>
+      <square70x70logo src="/forticoreLogo.svg"/>
+      <square150x150logo src="/forticoreLogo.svg"/>
+      <square310x310logo src="/forticoreLogo.svg"/>
+      <wide310x150logo src="/forticoreLogo.svg"/>
+      <TileColor>#8A53FE</TileColor>
+    </tile>
+  </msapplication>
+</browserconfig>
+

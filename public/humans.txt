@@ -1,0 +1,15 @@
+/* TEAM */
+Developer: FortiCore Development Team
+Contact: contact@forticoredev.innov.rw
+Twitter: @FortiCore
+Location: Rwanda
+
+/* THANKS */
+Thanks to all the cybersecurity professionals who helped test and improve FortiCore.
+
+/* SITE */
+Last update: 2024/12/19
+Standards: HTML5, CSS3, JavaScript ES6+
+Components: React, TypeScript, Vite
+IDE: Visual Studio Code
+

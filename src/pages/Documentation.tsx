@@ -2,6 +2,9 @@
 import { Link } from 'react-router-dom';
 import { ChevronRight, FileText, Terminal, Shield, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import SEO from '@/components/SEO';
+import { useEffect } from 'react';
+import { injectStructuredData, generateBreadcrumbSchema } from '@/lib/seo-utils';
 
 interface DocCardProps {
   icon: React.ElementType;
@@ -35,8 +38,29 @@ const DocCard = ({ icon: Icon, title, description, to, delay }: DocCardProps) =>
 };
 
 const Documentation = () => {
+  useEffect(() => {
+    // Add breadcrumb structured data
+    const breadcrumbSchema = generateBreadcrumbSchema([
+      { name: 'Home', url: 'https://forticoredev.innov.rw/' },
+      { name: 'Documentation', url: 'https://forticoredev.innov.rw/documentation' },
+    ]);
+    injectStructuredData(breadcrumbSchema, 'breadcrumb-schema');
+  }, []);
+
   return (
-    <div className="max-w-4xl mx-auto">
+    <>
+      <SEO
+        title="FortiCore Documentation - Complete Guide to Penetration Testing Tool"
+        description="Comprehensive documentation for FortiCore automated penetration testing tool. Learn installation, configuration, features, and advanced security testing techniques."
+        keywords="FortiCore documentation, penetration testing guide, security testing tutorial, FortiCore installation, cybersecurity tool documentation, automated pentesting guide"
+        url="https://forticoredev.innov.rw/documentation"
+        type="article"
+        article={{
+          section: 'Documentation',
+          tags: ['documentation', 'penetration testing', 'security', 'tutorial'],
+        }}
+      />
+      <div className="max-w-4xl mx-auto">
       <div className="mb-12 animate-slide-up">
         <h1 className="text-4xl font-bold mb-4">Documentation</h1>
         <p className="text-xl text-muted-foreground">
@@ -102,6 +126,7 @@ const Documentation = () => {
         </div>
       </section>
     </div>
+    </>
   );
 };
 
