@@ -98,7 +98,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const { error } = await supabase.auth.verifyOtp({
       email,
       token,
-      type: 'email'
+      type: 'signup'
     });
     if (error) return { error: error.message };
     return {};
