@@ -21,13 +21,7 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     // SEO and Performance optimizations
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: mode === 'production',
-        drop_debugger: mode === 'production',
-      },
-    },
+    minify: 'esbuild',
     rollupOptions: {
       output: {
         manualChunks: {
@@ -41,6 +35,9 @@ export default defineConfig(({ mode }) => ({
     sourcemap: mode === 'development',
     // Optimize chunk size
     chunkSizeWarningLimit: 1000,
+  },
+  esbuild: {
+    drop: mode === 'production' ? ['console', 'debugger'] : [],
   },
   // Performance optimizations
   optimizeDeps: {
