@@ -90,7 +90,7 @@ If you prefer to use magic links instead of OTP:
 
 ## Important Notes
 
-- The OTP token is typically 6 digits
+- The OTP token is typically 8 digits (default Supabase configuration)
 - Tokens expire after 24 hours (configurable in Supabase settings)
 - Rate limiting applies to prevent abuse (typically 60 seconds between resends)
 - The verification must happen before the user can sign in
