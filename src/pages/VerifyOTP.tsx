@@ -13,7 +13,7 @@ const VerifyOTP = () => {
   const location = useLocation();
   const email = location.state?.email;
 
-  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const [otp, setOtp] = useState(['', '', '', '', '', '', '', '']);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -57,7 +57,7 @@ const VerifyOTP = () => {
     setError(null);
 
     // Auto-focus next input
-    if (value && index < 5) {
+    if (value && index < 7) {
       inputRefs.current[index + 1]?.focus();
     }
   };
@@ -67,14 +67,14 @@ const VerifyOTP = () => {
       inputRefs.current[index - 1]?.focus();
     } else if (e.key === 'ArrowLeft' && index > 0) {
       inputRefs.current[index - 1]?.focus();
-    } else if (e.key === 'ArrowRight' && index < 5) {
+    } else if (e.key === 'ArrowRight' && index < 7) {
       inputRefs.current[index + 1]?.focus();
     }
   };
 
   const handlePaste = (e: React.ClipboardEvent) => {
     e.preventDefault();
-    const pastedData = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+    const pastedData = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 8);
     const newOtp = [...otp];
     
     for (let i = 0; i < pastedData.length; i++) {
@@ -85,7 +85,7 @@ const VerifyOTP = () => {
     
     // Focus the next empty input or the last one
     const nextEmptyIndex = newOtp.findIndex(digit => !digit);
-    const focusIndex = nextEmptyIndex === -1 ? 5 : nextEmptyIndex;
+    const focusIndex = nextEmptyIndex === -1 ? 7 : nextEmptyIndex;
     inputRefs.current[focusIndex]?.focus();
   };
 
@@ -93,8 +93,8 @@ const VerifyOTP = () => {
     e.preventDefault();
     
     const otpCode = otp.join('').trim();
-    if (otpCode.length !== 6) {
-      setError('Please enter the complete 6-digit code');
+    if (otpCode.length !== 8) {
+      setError('Please enter the complete 8-digit code');
       return;
     }
 
@@ -132,7 +132,7 @@ const VerifyOTP = () => {
       setError(error);
     } else {
       setCountdown(60);
-      setOtp(['', '', '', '', '', '']);
+      setOtp(['', '', '', '', '', '', '', '']);
       inputRefs.current[0]?.focus();
     }
   };
@@ -200,7 +200,7 @@ const VerifyOTP = () => {
 
             {/* OTP Input Form */}
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="flex justify-center gap-2 sm:gap-3">
+              <div className="flex justify-center gap-1.5 sm:gap-2">
                 {otp.map((digit, index) => (
                   <Input
                     key={index}
@@ -212,7 +212,7 @@ const VerifyOTP = () => {
                     onChange={(e) => handleChange(index, e.target.value)}
                     onKeyDown={(e) => handleKeyDown(index, e)}
                     onPaste={handlePaste}
-                    className="w-12 h-14 text-center text-xl font-semibold sm:w-14 sm:h-16 sm:text-2xl"
+                    className="w-10 h-12 text-center text-lg font-semibold sm:w-12 sm:h-14 sm:text-xl"
                     disabled={submitting}
                     autoFocus={index === 0}
                   />

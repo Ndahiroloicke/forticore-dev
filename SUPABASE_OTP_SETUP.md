@@ -57,7 +57,7 @@ VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 ### 7. Test the Flow
 
 1. Sign up with a new email
-2. You should receive an email with a 6-digit OTP code
+2. You should receive an email with an 8-digit OTP code
 3. Enter the code on the verification page
 4. Get redirected to the dashboard upon success
 
