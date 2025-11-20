@@ -10,6 +10,6 @@ if (!supabaseUrl || !supabaseAnonKey) {
 // Export a nullable client so callers can handle missing envs gracefully
 export const supabase = (supabaseUrl && supabaseAnonKey)
   ? createClient(supabaseUrl, supabaseAnonKey)
-  : null as any;
+  : null as any; //fixed it
 
 
