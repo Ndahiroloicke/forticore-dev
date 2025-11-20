@@ -92,11 +92,13 @@ const VerifyOTP = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const otpCode = otp.join('');
+    const otpCode = otp.join('').trim();
     if (otpCode.length !== 6) {
       setError('Please enter the complete 6-digit code');
       return;
     }
+
+    console.log('[VerifyOTP] Submitting OTP:', { email, otpCode, length: otpCode.length });
 
     setSubmitting(true);
     setError(null);
@@ -104,9 +106,11 @@ const VerifyOTP = () => {
     const { error } = await verifyOTP(email, otpCode);
     
     if (error) {
+      console.error('[VerifyOTP] Verification failed:', error);
       setError(error);
       setSubmitting(false);
     } else {
+      console.log('[VerifyOTP] Verification successful!');
       setSuccess(true);
       setTimeout(() => {
         navigate('/dashboard', { replace: true });

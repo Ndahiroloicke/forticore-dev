@@ -95,11 +95,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const verifyOTP = async (email: string, token: string) => {
     if (!supabase) return { error: 'Auth not configured. Missing env vars.' };
-    const { error } = await supabase.auth.verifyOtp({
+    
+    // Clean the token - remove whitespace
+    const cleanToken = token.trim();
+    
+    console.log('[Auth] Verifying OTP:', { 
+      email, 
+      tokenLength: cleanToken.length,
+      token: cleanToken 
+    });
+    
+    const { error, data } = await supabase.auth.verifyOtp({
       email,
-      token,
+      token: cleanToken,
       type: 'signup'
     });
+    
+    console.log('[Auth] OTP verification result:', { error, data });
+    
     if (error) return { error: error.message };
     return {};
   };
